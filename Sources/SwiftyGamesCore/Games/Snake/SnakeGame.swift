@@ -93,21 +93,15 @@ extension SnakeGame: Game {
 		snake.advance()
 	}
 
-	var description: [String] {
-		get {
-			var snakeDescription = [String]()
-			snakeDescription.append("Welcome to Snake, the classic arcade game!\n")
-			snakeDescription.append("--------------------------------------------------------------------------\n")
-			snakeDescription.append("Objective: Eat as many fruits as possible, without crashing into yourself.\n")
-			snakeDescription.append("--------------------------------------------------------------------------\n")
-			snakeDescription.append("Controls\n")
-			snakeDescription.append("w - up\n")
-			snakeDescription.append("a - left\n")
-			snakeDescription.append("s - down\n")
-			snakeDescription.append("d - right\n")
-			snakeDescription.append("q - quit\n")
-			return snakeDescription
-		}
+	var gameInfo: GameInfo {
+		let title = "Snake"
+		let author = "Dalton G. Sweeney"
+		let about = "Welcome to Snake, the classic arcade game!\n Eat as many fruits as you can without crashing into yourself."
+		let keyCommands: [Character: String] = ["w": "up",
+											 "a": "left",
+											 "s": "down",
+											 "d": "right"]
+		return GameInfo(title: title, author: author, about: about, keyCommands: keyCommands)
 	}
 
 }
@@ -143,7 +137,7 @@ extension SnakeGame: TerminalInputReceivable {
 	}
 }
 
-extension SnakeGame: ASCIIDrawable {
+extension SnakeGame: TerminalDisplayable {
 
 	var colorPairMap: [ColorPair: Int32] {
 		return self.colorPairMapImpl

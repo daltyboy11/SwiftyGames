@@ -1,9 +1,22 @@
 import Foundation
 
+struct GameInfo {
+	/// The game's title
+	let title: String
+	
+	/// Author who wrote the orginal source
+	let author: String
+
+	/// A brief description of the game.
+	/// See existing games for examples.
+	let about: String
+
+	/// Keyboard commands for the game
+	let keyCommands: [Character: String]
+}
+
 protocol Game: InputReceivable {
 
-	// Info about the game
-	func name() -> String
 	func score() -> Int
 	func isGameOver() -> Bool
 
@@ -12,13 +25,10 @@ protocol Game: InputReceivable {
 
 	func process()
 	
-	// A very generic variable for any info / help related to the game
-	// Will be displayed on the instructions page
-	// Some things to put in here would be the game objective and the controls
-	var description: [String] { get }
+	var gameInfo: GameInfo { get }
 }
 
-extension Game where Self: ASCIIDrawable {
+extension Game where Self: TerminalDisplayable {
 
 	func show() {
 		clear()

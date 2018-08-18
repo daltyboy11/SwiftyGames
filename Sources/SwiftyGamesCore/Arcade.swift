@@ -17,7 +17,7 @@ public class Arcade {
         func showGameInfo(for game: Game) {
             attron(COLOR_PAIR(0))
             addstr("\n")
-            addstr(game.name() + " | Score: \(game.score())")
+            addstr(game.gameInfo.title + " | Score: \(game.score())")
             attroff(COLOR_PAIR(0))
         }
         
