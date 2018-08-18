@@ -54,14 +54,37 @@ class SnakeGame {
 		}
 		return Position(x: randX, y: randY)
 	}
+}
 
-	// MARK: - ASCII Drawable Stuff
-	let bodyPoint = TerminalDisplayablePoint(character: "o", foregroundColor: .green, backgroundColor: .black)
-	let headPoint = TerminalDisplayablePoint(character: "o", foregroundColor: .yellow, backgroundColor: .black)
-	let fruitPoint = TerminalDisplayablePoint(character: "o", foregroundColor: .red, backgroundColor: .black)
-	let backgroundPoint = TerminalDisplayablePoint(character: " ", foregroundColor: .black, backgroundColor: .black)
-	let verticalBorderPoint = TerminalDisplayablePoint(character: "|", foregroundColor: .white, backgroundColor: .black)
-	let horizontalBorderPoint = TerminalDisplayablePoint(character: "-", foregroundColor: .white, backgroundColor: .black)
+extension SnakeGame: TerminalInputReceivable {
+	func input() {
+		halfdelay(1)
+		var shouldModifyDirectionOfSnake = true
+		let input: Int32 = getch()
+		let inputDirection: Direction
+		switch input {
+		case 119: // w
+			inputDirection = .up
+		case 115: // s
+			inputDirection = .down
+		case 97: // a
+			inputDirection = .left
+		case 100: // d
+			inputDirection = .right
+		case 113: // q
+			inputDirection = .up // dummy value, we are quitting
+			quit = true
+		default:
+			inputDirection = .up // dummy value, invalid key type 
+			shouldModifyDirectionOfSnake = false
+		}
+
+		guard shouldModifyDirectionOfSnake else {
+			return
+		}
+
+		snake.direction = inputDirection
+	}
 }
 
 extension SnakeGame: Game {
@@ -103,41 +126,34 @@ extension SnakeGame: Game {
 											 "d": "right"]
 		return GameInfo(title: title, author: author, about: about, keyCommands: keyCommands)
 	}
-
 }
 
-extension SnakeGame: TerminalInputReceivable {
-	func input() {
-		halfdelay(1)
-		var shouldModifyDirectionOfSnake = true
-		let input: Int32 = getch()
-		let inputDirection: Direction
-		switch input {
-		case 119: // w
-			inputDirection = .up
-		case 115: // s
-			inputDirection = .down
-		case 97: // a
-			inputDirection = .left
-		case 100: // d
-			inputDirection = .right
-		case 113: // q
-			inputDirection = .up // dummy value, we are quitting
-			quit = true
-		default:
-			inputDirection = .up // dummy value, invalid key type 
-			shouldModifyDirectionOfSnake = false
-		}
-
-		guard shouldModifyDirectionOfSnake else {
-			return
-		}
-
-		snake.direction = inputDirection
-	}
-}
 
 extension SnakeGame: TerminalDisplayable {
+
+	private var bodyPoint: TerminalDisplayablePoint {
+		return TerminalDisplayablePoint(character: "o", foregroundColor: .green, backgroundColor: .black)
+	}
+
+	private var headPoint: TerminalDisplayablePoint {
+		return	TerminalDisplayablePoint(character: "o", foregroundColor: .yellow, backgroundColor: .black)
+	}
+
+	private var fruitPoint: TerminalDisplayablePoint {
+		return TerminalDisplayablePoint(character: "o", foregroundColor: .red, backgroundColor: .black)
+	}
+
+	private var backgroundPoint: TerminalDisplayablePoint {
+		return TerminalDisplayablePoint(character: " ", foregroundColor: .black, backgroundColor: .black)
+	}
+
+	private var verticalBorderPoint: TerminalDisplayablePoint {
+		return TerminalDisplayablePoint(character: "|", foregroundColor: .white, backgroundColor: .black)
+	}
+	
+	private var horizontalBorderPoint: TerminalDisplayablePoint {
+		return TerminalDisplayablePoint(character: "-", foregroundColor: .white, backgroundColor: .black)
+	}
 
 	var colorPairMap: [ColorPair: Int32] {
 		return self.colorPairMapImpl
@@ -187,5 +203,4 @@ extension SnakeGame: TerminalDisplayable {
 		points.reverse()
 		return points
 	}
-
 }
