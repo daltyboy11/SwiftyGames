@@ -1,13 +1,19 @@
 import Darwin.ncurses
 
 public class Arcade {
+    
+    private enum State {
+        case arcadeMenu
+        case arcadeDone
+        case gameMenu
+        case gameActive
+    }
+    
+    private var state: State = .arcadeMenu
 	
 	private let displayer = TerminalDisplayer()
 	private let games: [Game]
 	private var selectedGame: Game
-
-	private var shouldQuit = false
-	private var shouldStartGame = false
 
 	private var selectedGameIndex: Int {
 		didSet {
@@ -22,21 +28,26 @@ public class Arcade {
 	}
 
 	// Starts the arcade by showing the menu. i.e. the list of games to play
-  public func start() {
+    public func start() {
 		displayer.setupTerminal()
-
 		displayer.refreshTerminal(for: self)
-		while !shouldQuit {
-			displayer.display(self)
-			input()
-			if shouldStartGame {
-				playGame()
-				shouldStartGame = false
-			}
-		}
+    
+        while true {
+            displayer.display(self)
+            switch state {
+            case .arcadeMenu:
+                input()
+            case .gameMenu:
+                fatalError("Implement me")
+            case .gameActive:
+                playGame()
+            case .arcadeDone:
+                break
+            }
+        }
 
 		displayer.restoreTerminal()
-	}
+    }
 
 	private func playGame() {
 		let game = selectedGame
@@ -47,6 +58,8 @@ public class Arcade {
 			game.process()
 		}
 		game.reset()
+        // reset arcade state
+        state = .arcadeMenu
 		displayer.refreshTerminal(for: self)
 	}	
 
@@ -116,21 +129,44 @@ extension Arcade: TerminalDisplayable {
 		return self.colorPairMapImpl
 	} 
 
+	// The display for the arcade menu
+	private func pointsMenu() -> [[TerminalDisplayablePoint]] {
+        fatalError()
+	}
+
+	// the display for a game currently in play
+	private func pointsGameActive() -> [[TerminalDisplayablePoint]] {
+        fatalError()
+	}
+
+	// the display for a game menu
+	private func pointsGameInfo() -> [[TerminalDisplayablePoint]] {
+        fatalError()
+	}
+
 	func points() -> [[TerminalDisplayablePoint]] {
 		var points = [[TerminalDisplayablePoint]]()
 		// Top border
-		points.append([cornerBorderPoint] + [TerminalDisplayablePoint](repeating: horizontalBorderPoint, count: self.width) + [cornerBorderPoint])
+		points.append([cornerBorderPoint]
+            + [TerminalDisplayablePoint](repeating: horizontalBorderPoint, count: self.width)
+            + [cornerBorderPoint])
 		
 		// The title appears centered and at the top
 		// Content
 		for line in self.titleLines {
 			let titleLine = terminalDisplayablePoints(for: line)
 			let padding = [TerminalDisplayablePoint](repeating: blankPoint, count: (self.width - line.count) / 2 )
-			points.append([verticalBorderPoint] + padding + titleLine + padding + [verticalBorderPoint])
+			points.append([verticalBorderPoint]
+                + padding
+                + titleLine
+                + padding
+                + [verticalBorderPoint])
 		}
 
 		// Padding
-		points.append([verticalBorderPoint] + [TerminalDisplayablePoint](repeating: blankPoint, count: self.width) + [verticalBorderPoint])
+		points.append([verticalBorderPoint]
+            + [TerminalDisplayablePoint](repeating: blankPoint, count: self.width)
+            + [verticalBorderPoint])
 
 		// About
 		for line in self.aboutLines {
@@ -138,11 +174,18 @@ extension Arcade: TerminalDisplayable {
 			let remainder = (self.width - aboutLine.count) % 2
 			let extraSpace = remainder == 1 ? [blankPoint] : []
 			let padding = [TerminalDisplayablePoint](repeating: blankPoint, count: (self.width - aboutLine.count) / 2)
-			points.append([verticalBorderPoint] + padding + aboutLine + padding + extraSpace + [verticalBorderPoint])
+			points.append([verticalBorderPoint]
+                + padding
+                + aboutLine
+                + padding
+                + extraSpace
+                + [verticalBorderPoint])
 		}
 
 		// Padding
-		points.append([verticalBorderPoint] + [TerminalDisplayablePoint](repeating: blankPoint, count: self.width) + [verticalBorderPoint])
+		points.append([verticalBorderPoint]
+            + [TerminalDisplayablePoint](repeating: blankPoint, count: self.width)
+            + [verticalBorderPoint])
 
 		// The Games
 		for game in self.games {
@@ -178,8 +221,9 @@ extension Arcade: TerminalDisplayable {
 
 	// Given a single line string, make an array of terminal displayable points for that string, in default colors
 	private func terminalDisplayablePoints(for string: String,
-																				foregroundColor: Color = .white,
-																				backgroundColor: Color = .black) -> [TerminalDisplayablePoint] {
+                                           foregroundColor: Color = .white,
+                                           backgroundColor: Color = .black) -> [TerminalDisplayablePoint]
+    {
 		var points = [TerminalDisplayablePoint]()
 		// top border
 		for char in string {
@@ -202,9 +246,9 @@ extension Arcade: TerminalInputReceivable {
 				selectedGameIndex += 1
 			}
 		case 32: // space bar
-			shouldStartGame = true
+			state = .gameActive
 		case 113: // q
-			shouldQuit = true
+			state = .arcadeDone
 		default:
 			break
 		}
