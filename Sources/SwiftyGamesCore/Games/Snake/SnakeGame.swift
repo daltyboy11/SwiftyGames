@@ -98,7 +98,7 @@ extension SnakeGame: Game {
 	}
 
 	// The game is other if the snake collides with itself or it tries to go out of bounds
-	func isGameOver() -> Bool {
+	func isOver() -> Bool {
 		return snake.bodyIntersects(snake.position)
 		|| snake.position.x < 0
 		|| snake.position.x >= self.width

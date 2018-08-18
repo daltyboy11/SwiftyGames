@@ -66,6 +66,15 @@ public class Arcade {
 		return lines
 	}()
 
+	private let aboutLines: [String] = {
+		var lines = [String]()
+		lines.append("Swifty Games is an open source collection of your favourite 2D games")
+		lines.append("on the terminal. It is proudly written in Swift :)")
+		lines.append("Contributions to Swifty Games are more than welcome. Open a pull request")
+		lines.append("to fix a bug, add enhancements, or add a game to the arcade!")
+		return lines
+	}()
+
 	private var titleWidth: Int {
 		return titleLines[0].count
 	}
@@ -80,6 +89,8 @@ public class Arcade {
 		return map
 	}()
 
+	private let paddingBetweenTitleAndAbout = 1
+
 	private let horizontalBorderPoint = TerminalDisplayablePoint(character: "-")
 	private let verticalBorderPoint = TerminalDisplayablePoint(character: "|")
 	private let cornerBorderPoint = TerminalDisplayablePoint(character: "*")
@@ -91,14 +102,12 @@ extension Arcade: TerminalDisplayable {
 		return 75
 	}
 
-	private var height: Int {
-		return 45
-	}
+	private var height: Int { return 45 } 
 
-	var colorPairMap: [ColorPair: Int32] {
+	var colorPairMap: [ColorPair: Int32] { 
 		return self.colorPairMapImpl
-	}
-
+	} 
+	
 	func points() -> [[TerminalDisplayablePoint]] {
 		var points = [[TerminalDisplayablePoint]]()
 		// Top border
@@ -112,7 +121,19 @@ extension Arcade: TerminalDisplayable {
 			points.append([verticalBorderPoint] + padding + titleLine + padding + [verticalBorderPoint])
 		}
 
-		for _ in 0..<(self.height - self.titleLines.count) {
+		// Padding
+		points.append([verticalBorderPoint] + [TerminalDisplayablePoint](repeating: blankPoint, count: self.width) + [verticalBorderPoint])
+
+		// About
+		for line in self.aboutLines {
+			let aboutLine = terminalDisplayablePoints(for: line)
+			let remainder = (self.width - aboutLine.count) % 2
+			let extraSpace = remainder == 1 ? [blankPoint] : []
+			let padding = [TerminalDisplayablePoint](repeating: blankPoint, count: (self.width - aboutLine.count) / 2)
+			points.append([verticalBorderPoint] + padding + aboutLine + padding + extraSpace + [verticalBorderPoint])
+		}
+
+		for _ in 0..<(height - titleLines.count - aboutLines.count - paddingBetweenTitleAndAbout) {
 			points.append([verticalBorderPoint] + [TerminalDisplayablePoint](repeating: blankPoint, count: self.width) + [verticalBorderPoint])
 		}
 

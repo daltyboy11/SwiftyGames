@@ -22,7 +22,7 @@ protocol Game: InputReceivable, TerminalDisplayable {
 
 	/// True if the game has ended.
 	/// The game can end if the user loses or quits
-	func isGameOver() -> Bool
+	func isOver() -> Bool
 
 	/// Resets the game, so the user can play again.
 	func reset()
