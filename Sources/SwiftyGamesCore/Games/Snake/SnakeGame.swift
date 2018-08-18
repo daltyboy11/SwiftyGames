@@ -39,7 +39,6 @@ class SnakeGame {
 		var map = [ColorPair: Int32]()
 		for (index, point) in self.pointTypes().enumerated() {
 			map[ColorPair(first: point.foregroundColor, second: point.backgroundColor)] = Int32(index + 1)
-			init_pair(Int16(index + 1), ncursesColor(from: point.foregroundColor), ncursesColor(from: point.backgroundColor))
 		}
 		return map
 	}()

@@ -16,69 +16,40 @@ public class Arcade {
 	}
 
 	public init() {
-		let Snake = SnakeGame()
-		self.games = [Snake]
+		self.games = [SnakeGame()]
 		self.selectedGame = games[0]
 		self.selectedGameIndex = 0
 	}
 
 	// Starts the arcade by showing the menu. i.e. the list of games to play
   public func start() {
-        // TODO: Actually show the menu. For now, display the snake game
-        func showGameInfo(for game: Game) {
-            attron(COLOR_PAIR(0))
-            addstr("\n")
-            addstr(game.gameInfo.title + " | Score: \(game.score())")
-            attroff(COLOR_PAIR(0))
-        }
-        
-        let snake = games.first!
-        
-        initscr()
-        noecho()
-        curs_set(0)
-        start_color()
+		displayer.setupTerminal()
 
-				/*
-        while !snake.isOver() {
-          	displayer.display(snake)  
-            showGameInfo(for: snake)
-            snake.input()
-            snake.process()
-        }
-				*/
+		displayer.refreshTerminal(for: self)
+		while !shouldQuit {
+			displayer.display(self)
+			input()
+			if shouldStartGame {
+				playGame()
+				shouldStartGame = false
+			}
+		}
 
-				while !shouldQuit {
-					displayer.display(self)
-					input()
-					if shouldStartGame {
-						playGame()
-						shouldStartGame = false
-					}
-				}
-
-        endwin()
+		displayer.restoreTerminal()
 	}
 
 	private func playGame() {
 		let game = selectedGame
+		displayer.refreshTerminal(for: game)
 		while !game.isOver() {
 			displayer.display(game)
 			game.input()
 			game.process()
 		}
 		game.reset()
+		displayer.refreshTerminal(for: self)
 	}	
 
-	/*
-	The arcade title. Will look like this on the screen:
-	 _____         _ ______           ___                        __
-  / ___/      __(_) __/ /___  __   /   |  ______________ _____/ /__
-  \__ \ | /| / / / /_/ __/ / / /  / /| | / ___/ ___/ __ `/ __  / _ \
- ___/ / |/ |/ / / __/ /_/ /_/ /  / ___ |/ /  / /__/ /_/ / /_/ /  __/
-/____/|__/|__/_/_/  \__/\__, /  /_/  |_/_/   \___/\__,_/\__,_/\___/
-                       /____/
-	*/
 	private let titleLines: [String] = {
 		var lines = [String]()
 		lines.append("   _____         _ ______           ______                         ")
@@ -111,7 +82,6 @@ public class Arcade {
 		var map = [ColorPair: Int32]()
 		for (index, pair) in self.colorPairs.enumerated() {
 			map[pair] = Int32(index + 1)
-			init_pair(Int16(index + 1), ncursesColor(from: pair.first), ncursesColor(from: pair.second))
 		}
 		return map
 	}()
