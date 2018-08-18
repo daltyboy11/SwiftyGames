@@ -6,10 +6,17 @@ public class Arcade {
 	private let games: [Game]
 	private var selectedGame: Game
 
+	private var selectedGameIndex: Int {
+		didSet {
+			self.selectedGame = games[selectedGameIndex]
+		}
+	}
+
 	public init() {
 		let Snake = SnakeGame()
 		self.games = [Snake]
-		self.selectedGame = Snake
+		self.selectedGame = games[0]
+		self.selectedGameIndex = 0
 	}
 
 	// Starts the arcade by showing the menu. i.e. the list of games to play
@@ -28,21 +35,20 @@ public class Arcade {
         noecho()
         curs_set(0)
         start_color()
-        
-				/*
-        while !snake.isGameOver() {
+
+        /*
+        while !snake.isOver() {
           	displayer.display(snake)  
             showGameInfo(for: snake)
             snake.input()
             snake.process()
         }
 				*/
-
 				while true {
 					displayer.display(self)
 					getch()
 				}
-        
+  
         endwin()
 	}
 
@@ -151,5 +157,25 @@ extension Arcade: TerminalDisplayable {
 			points.append(TerminalDisplayablePoint(character: Unicode.Scalar(String(char)) ?? Unicode.Scalar("o")))
 		}
 		return points
+	}
+}
+
+extension Arcade: TerminalInputReceivable {
+	public func input() {
+		let input = getch()
+		switch input {
+		case 119: // w
+			if selectedGameIndex > 0 {
+				selectedGameIndex -= 1
+			}
+		case 115: // s
+			if selectedGameIndex < games.count - 1 {
+				selectedGameIndex += 1
+			}
+		case 113: // q
+			break
+		default:
+			break
+		}
 	}
 }
