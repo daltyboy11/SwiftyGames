@@ -13,7 +13,7 @@ class SnakeGame {
 	private var quit = false
 
 	private var fruitPosition: Position = .zero
-	let snake: Snake
+	var snake: Snake
 
 	init(width: Int = 50, height: Int = 30) {
 		self.width = width
@@ -114,6 +114,16 @@ extension SnakeGame: Game {
 		}
 
 		snake.advance()
+	}
+
+	func reset() {
+		// reset the snake
+		let snakePosition = Position(x: self.width / 2, y: self.height / 2)
+		self.snake = Snake(position: snakePosition)
+		// reset the fruit
+		self.fruitPosition = randomPositionNotInSnake()
+		
+		self.quit = false
 	}
 
 	var gameInfo: GameInfo {

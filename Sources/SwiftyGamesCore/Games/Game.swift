@@ -17,10 +17,19 @@ struct GameInfo {
 
 protocol Game: InputReceivable, TerminalDisplayable {
 
+	/// The current score for the game in play
 	func score() -> Int
+
+	/// True if the game has ended.
+	/// The game can end if the user loses or quits
 	func isGameOver() -> Bool
 
+	/// Resets the game, so the user can play again.
+	func reset()
+
+	/// Tell the game that it should update its state for a single timestep.
 	func process()
 	
+	/// The info for this game
 	var gameInfo: GameInfo { get }
 }
