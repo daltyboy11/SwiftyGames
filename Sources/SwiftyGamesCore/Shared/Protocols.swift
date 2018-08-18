@@ -19,10 +19,10 @@ protocol TerminalDisplayable: Displayable {
 	// Maps color pairs to their respective index in the ncurses COLOR_PAIR(_)
 	var colorPairMap: [ColorPair: Int32] { get }
 
-	func pointTypes() -> [ASCIIDrawablePoint]
+	func pointTypes() -> [TerminalDisplayablePoint]
 	
 	// The 2D array of points to display in the terminal using ncurses
-	func points() -> [[ASCIIDrawablePoint]] 
+	func points() -> [[TerminalDisplayablePoint]] 
 }
 
 class TerminalDisplayer {

@@ -56,12 +56,12 @@ class SnakeGame {
 	}
 
 	// MARK: - ASCII Drawable Stuff
-	let bodyPoint = ASCIIDrawablePoint(character: "o", foregroundColor: .green, backgroundColor: .black)
-	let headPoint = ASCIIDrawablePoint(character: "o", foregroundColor: .yellow, backgroundColor: .black)
-	let fruitPoint = ASCIIDrawablePoint(character: "o", foregroundColor: .red, backgroundColor: .black)
-	let backgroundPoint = ASCIIDrawablePoint(character: " ", foregroundColor: .black, backgroundColor: .black)
-	let verticalBorderPoint = ASCIIDrawablePoint(character: "|", foregroundColor: .white, backgroundColor: .black)
-	let horizontalBorderPoint = ASCIIDrawablePoint(character: "-", foregroundColor: .white, backgroundColor: .black)
+	let bodyPoint = TerminalDisplayablePoint(character: "o", foregroundColor: .green, backgroundColor: .black)
+	let headPoint = TerminalDisplayablePoint(character: "o", foregroundColor: .yellow, backgroundColor: .black)
+	let fruitPoint = TerminalDisplayablePoint(character: "o", foregroundColor: .red, backgroundColor: .black)
+	let backgroundPoint = TerminalDisplayablePoint(character: " ", foregroundColor: .black, backgroundColor: .black)
+	let verticalBorderPoint = TerminalDisplayablePoint(character: "|", foregroundColor: .white, backgroundColor: .black)
+	let horizontalBorderPoint = TerminalDisplayablePoint(character: "-", foregroundColor: .white, backgroundColor: .black)
 }
 
 extension SnakeGame: Game {
@@ -143,7 +143,7 @@ extension SnakeGame: TerminalDisplayable {
 		return self.colorPairMapImpl
 	}
 
-	func pointTypes() -> [ASCIIDrawablePoint] {
+	func pointTypes() -> [TerminalDisplayablePoint] {
 		return [bodyPoint,
 						headPoint,
 						fruitPoint,
@@ -153,13 +153,13 @@ extension SnakeGame: TerminalDisplayable {
 	}
 						
 
-	func points() -> [[ASCIIDrawablePoint]] {
+	func points() -> [[TerminalDisplayablePoint]] {
 		// The ncurses coordinate system is top left corner origin, but Snake and SnakeGame use bottom left corner origin.
 		// Therefore, we need to flip the y
-		var points = [[ASCIIDrawablePoint]]()
+		var points = [[TerminalDisplayablePoint]]()
 
 		for r in 0..<self.height {
-			var row = [ASCIIDrawablePoint]()
+			var row = [TerminalDisplayablePoint]()
 			row.append(verticalBorderPoint)
 			for c in 0..<self.width {
 				let pos = Position(x: c, y: r)
@@ -179,8 +179,8 @@ extension SnakeGame: TerminalDisplayable {
 		}
 		
 		// An additional two characters in the top and bottom rows looks nicer
-		let topBorderRow = [ASCIIDrawablePoint](repeating: horizontalBorderPoint, count: self.width + 2)
-		let bottomBorderRow = [ASCIIDrawablePoint](repeating: horizontalBorderPoint, count: self.width + 2)
+		let topBorderRow = [TerminalDisplayablePoint](repeating: horizontalBorderPoint, count: self.width + 2)
+		let bottomBorderRow = [TerminalDisplayablePoint](repeating: horizontalBorderPoint, count: self.width + 2)
 
 		points.insert(topBorderRow, at: 0)
 		points.append(bottomBorderRow)

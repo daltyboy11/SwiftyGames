@@ -1,4 +1,4 @@
-struct ASCIIDrawablePoint {
+struct TerminalDisplayablePoint {
 	let character: Unicode.Scalar
 	let foregroundColor: Color
 	let backgroundColor: Color
