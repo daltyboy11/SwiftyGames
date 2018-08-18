@@ -3,7 +3,7 @@ struct TerminalDisplayablePoint {
 	let foregroundColor: Color
 	let backgroundColor: Color
 
-	init(character: Unicode.Scalar, foregroundColor: Color, backgroundColor: Color) {
+	init(character: Unicode.Scalar = " ", foregroundColor: Color = .white, backgroundColor: Color = .black) {
 		self.character = character
 		self.foregroundColor = foregroundColor
 		self.backgroundColor = backgroundColor

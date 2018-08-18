@@ -40,7 +40,6 @@ public class Arcade {
 	}
 }
 
-/*
 extension Arcade: TerminalDisplayable {
 	private var width: Int {
 		return 75
@@ -49,5 +48,29 @@ extension Arcade: TerminalDisplayable {
 	private var height: Int {
 		return 45
 	}
+
+	var colorPairMap: [ColorPair: Int32] {
+		return [ColorPair(first: .white, second: .black): 1]
+	}
+
+	func points() -> [[TerminalDisplayablePoint]] {
+		var points = [[TerminalDisplayablePoint]]()
+		for r in 0..<self.height {
+			var row = [TerminalDisplayablePoint]()
+			for c in 0..<self.width {
+				row.append(TerminalDisplayablePoint(character: "o", foregroundColor: .white, backgroundColor: .black))
+			}
+			points.append(row)
+		}
+		return points
+	}
+
+	/*
+	 _____         _ ______           ___                        __
+  / ___/      __(_) __/ /___  __   /   |  ______________ _____/ /__
+  \__ \ | /| / / / /_/ __/ / / /  / /| | / ___/ ___/ __ `/ __  / _ \
+ ___/ / |/ |/ / / __/ /_/ /_/ /  / ___ |/ /  / /__/ /_/ / /_/ /  __/
+/____/|__/|__/_/_/  \__/\__, /  /_/  |_/_/   \___/\__,_/\__,_/\___/
+                       /____/
+	*/
 }
-*/
