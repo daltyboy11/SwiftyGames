@@ -2,6 +2,7 @@ import Darwin.ncurses
 
 public class Arcade {
 	
+	private let displayer = TerminalDisplayer()
 	private let games: [Game]
 	private var selectedGame: Game
 
@@ -29,7 +30,7 @@ public class Arcade {
         start_color()
         
         while !snake.isGameOver() {
-            snake.show()
+          	displayer.display(snake)  
             showGameInfo(for: snake)
             snake.input()
             snake.process()
