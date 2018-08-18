@@ -39,3 +39,15 @@ public class Arcade {
         endwin()
 	}
 }
+
+/*
+extension Arcade: TerminalDisplayable {
+	private var width: Int {
+		return 75
+	}
+
+	private var height: Int {
+		return 45
+	}
+}
+*/

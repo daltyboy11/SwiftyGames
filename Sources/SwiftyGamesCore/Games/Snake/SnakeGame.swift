@@ -169,7 +169,7 @@ extension SnakeGame: TerminalDisplayable {
 		return self.colorPairMapImpl
 	}
 
-	func pointTypes() -> [TerminalDisplayablePoint] {
+	private func pointTypes() -> [TerminalDisplayablePoint] {
 		return [bodyPoint,
 						headPoint,
 						fruitPoint,
