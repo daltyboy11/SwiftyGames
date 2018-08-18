@@ -19,9 +19,9 @@ class TerminalDisplayer {
 		}
 	}
 
-	func display(_ displayable: TerminalDisplayable) {
+	func display(_ displayable: TerminalDisplayable, shouldCenterInWindow: Bool = true) {
 		clear()
-		let points = displayable.points()
+		let points = shouldCenterInWindow ? windowCenteredPoints(from: displayable.points()) : displayable.points()
 		for (i, row) in points.enumerated() {
 			for (j, point) in row.enumerated() {
 				attron(COLOR_PAIR(displayable.colorPairMap[ColorPair(first: point.foregroundColor, second: point.backgroundColor)] ?? 0))
@@ -29,5 +29,30 @@ class TerminalDisplayer {
 				attroff(COLOR_PAIR(displayable.colorPairMap[ColorPair(first: point.foregroundColor, second: point.backgroundColor)] ?? 0))
 			}
 		}
+	}
+
+	private func windowCenteredPoints(from points: [[TerminalDisplayablePoint]]) -> [[TerminalDisplayablePoint]] {
+		let unusedRows = Int(LINES) - points.count
+		let unusedCols = Int(COLS) - points[0].count
+		guard unusedRows > 0 && unusedCols > 0 else {
+			return points
+		}
+
+		var newPoints = [[TerminalDisplayablePoint]]()
+		let topPadding = [TerminalDisplayablePoint](repeating: TerminalDisplayablePoint(character: " "), count: Int(COLS))
+		let leftPadding = [TerminalDisplayablePoint](repeating: TerminalDisplayablePoint(character: " "), count: unusedCols / 2)
+
+		// Top padding
+		for _ in 0..<(unusedRows / 2) {
+			newPoints.append(topPadding)
+		}
+
+		// Left padding
+		for row in points {
+			let paddedRow = leftPadding + row
+			newPoints.append(paddedRow)
+		}
+
+		return newPoints
 	}
 }

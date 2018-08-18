@@ -108,7 +108,9 @@ extension Arcade: TerminalDisplayable {
 		return 75
 	}
 
-	private var height: Int { return 45 } 
+	private var height: Int {
+		return 45
+	}
 
 	var colorPairMap: [ColorPair: Int32] { 
 		return self.colorPairMapImpl
@@ -173,7 +175,6 @@ extension Arcade: TerminalDisplayable {
 		points.append([cornerBorderPoint] + [TerminalDisplayablePoint](repeating: horizontalBorderPoint, count: self.width) + [cornerBorderPoint])
 		return points
 	}
-
 
 	// Given a single line string, make an array of terminal displayable points for that string, in default colors
 	private func terminalDisplayablePoints(for string: String,
