@@ -6,6 +6,9 @@ public class Arcade {
 	private let games: [Game]
 	private var selectedGame: Game
 
+	private var shouldQuit = false
+	private var shouldStartGame = false
+
 	private var selectedGameIndex: Int {
 		didSet {
 			self.selectedGame = games[selectedGameIndex]
@@ -36,7 +39,7 @@ public class Arcade {
         curs_set(0)
         start_color()
 
-        /*
+				/*
         while !snake.isOver() {
           	displayer.display(snake)  
             showGameInfo(for: snake)
@@ -44,13 +47,28 @@ public class Arcade {
             snake.process()
         }
 				*/
-				while true {
+
+				while !shouldQuit {
 					displayer.display(self)
-					getch()
+					input()
+					if shouldStartGame {
+						playGame()
+						shouldStartGame = false
+					}
 				}
-  
+
         endwin()
 	}
+
+	private func playGame() {
+		let game = selectedGame
+		while !game.isOver() {
+			displayer.display(game)
+			game.input()
+			game.process()
+		}
+		game.reset()
+	}	
 
 	/*
 	The arcade title. Will look like this on the screen:
@@ -90,14 +108,18 @@ public class Arcade {
 	}
 
 	private lazy var colorPairMapImpl: [ColorPair: Int32] = {
-		let map: [ColorPair: Int32] = [ColorPair(first: .white, second: .black): 1]
-		init_pair(1, ncursesColor(from: .white), ncursesColor(from: .black))
+		var map = [ColorPair: Int32]()
+		for (index, pair) in self.colorPairs.enumerated() {
+			map[pair] = Int32(index + 1)
+			init_pair(Int16(index + 1), ncursesColor(from: pair.first), ncursesColor(from: pair.second))
+		}
 		return map
 	}()
 
 	private let paddingBetweenTitleAndAbout = 1
+	private let paddingBetweenAboutAndGames = 1
 
-	private let horizontalBorderPoint = TerminalDisplayablePoint(character: "-")
+	private let horizontalBorderPoint = TerminalDisplayablePoint(character: "-", foregroundColor: .green, backgroundColor: .white)
 	private let verticalBorderPoint = TerminalDisplayablePoint(character: "|")
 	private let cornerBorderPoint = TerminalDisplayablePoint(character: "*")
 	private let blankPoint = TerminalDisplayablePoint(character: " ")
@@ -113,7 +135,13 @@ extension Arcade: TerminalDisplayable {
 	var colorPairMap: [ColorPair: Int32] { 
 		return self.colorPairMapImpl
 	} 
-	
+
+	private var colorPairs: [ColorPair] {
+		return [ColorPair(first: .white, second: .black),
+						ColorPair(first: .green, second: .red),
+						ColorPair(first: .black, second: .white)]
+	}
+
 	func points() -> [[TerminalDisplayablePoint]] {
 		var points = [[TerminalDisplayablePoint]]()
 		// Top border
@@ -139,7 +167,33 @@ extension Arcade: TerminalDisplayable {
 			points.append([verticalBorderPoint] + padding + aboutLine + padding + extraSpace + [verticalBorderPoint])
 		}
 
-		for _ in 0..<(height - titleLines.count - aboutLines.count - paddingBetweenTitleAndAbout) {
+		// Padding
+		points.append([verticalBorderPoint] + [TerminalDisplayablePoint](repeating: blankPoint, count: self.width) + [verticalBorderPoint])
+
+		// The Games
+		for game in self.games {
+			let gameNameLine: [TerminalDisplayablePoint]
+			// The selected game appears highlighted, the other games are plain text
+			if game.gameInfo.title == selectedGame.gameInfo.title {
+				gameNameLine = terminalDisplayablePoints(for: game.gameInfo.title, foregroundColor: .black, backgroundColor: .white)
+			} else {
+				gameNameLine = terminalDisplayablePoints(for: game.gameInfo.title, foregroundColor: .green, backgroundColor: .red)
+			}
+			let remainder = (self.width - gameNameLine.count) % 2
+			let extraSpace = remainder == 1 ? [blankPoint] : []
+			let padding = [TerminalDisplayablePoint](repeating: blankPoint, count: (self.width - gameNameLine.count) / 2)
+			points.append([verticalBorderPoint] + padding + gameNameLine + padding + extraSpace + [verticalBorderPoint])
+			points.append([verticalBorderPoint] + [TerminalDisplayablePoint](repeating: blankPoint, count: self.width) + [verticalBorderPoint])
+		}
+
+		let numBlankRows = height
+										 - titleLines.count
+										 - aboutLines.count
+										 - paddingBetweenTitleAndAbout
+										 - paddingBetweenAboutAndGames
+										 - games.count * 2
+										 
+		for _ in 0..<numBlankRows {
 			points.append([verticalBorderPoint] + [TerminalDisplayablePoint](repeating: blankPoint, count: self.width) + [verticalBorderPoint])
 		}
 
@@ -150,7 +204,9 @@ extension Arcade: TerminalDisplayable {
 
 
 	// Given a single line string, make an array of terminal displayable points for that string, in default colors
-	private func terminalDisplayablePoints(for string: String) -> [TerminalDisplayablePoint] {
+	private func terminalDisplayablePoints(for string: String,
+																				foregroundColor: Color = .white,
+																				backgroundColor: Color = .black) -> [TerminalDisplayablePoint] {
 		var points = [TerminalDisplayablePoint]()
 		// top border
 		for char in string {
@@ -172,8 +228,10 @@ extension Arcade: TerminalInputReceivable {
 			if selectedGameIndex < games.count - 1 {
 				selectedGameIndex += 1
 			}
+		case 32: // space bar
+			shouldStartGame = true
 		case 113: // q
-			break
+			shouldQuit = true
 		default:
 			break
 		}
