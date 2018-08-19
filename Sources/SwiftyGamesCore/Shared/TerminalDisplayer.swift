@@ -31,6 +31,10 @@ class TerminalDisplayer {
 		}
 	}
 
+	func display(string: String) {
+		addstr(string)
+	}
+
 	private func windowCenteredPoints(from points: [[TerminalDisplayablePoint]]) -> [[TerminalDisplayablePoint]] {
 		let unusedRows = Int(LINES) - points.count
 		let unusedCols = Int(COLS) - points[0].count
