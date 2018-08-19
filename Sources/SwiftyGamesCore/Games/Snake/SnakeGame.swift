@@ -201,6 +201,7 @@ extension SnakeGame: TerminalDisplayable {
 			
 			row.append(verticalBorderPoint)
 			points.append(row)
+
 		}
 		
 		// An additional two characters in the top and bottom rows looks nicer
@@ -210,6 +211,7 @@ extension SnakeGame: TerminalDisplayable {
 		points.insert(topBorderRow, at: 0)
 		points.append(bottomBorderRow)
 		points.reverse()
+
 		return points
 	}
 }

@@ -210,7 +210,7 @@ extension Arcade: TerminalDisplayable {
 		points.append(paddedRow(from: []))
 
 		selectedGame.gameInfo.about.enumerateLines { (line, _) in
-			points.append(self.paddedRow(from: self.terminalDisplayablePoints(for: line)))
+			points.append(self.paddedRow(from: terminalDisplayablePoints(for: line)))
 		}
 
 		points.append(paddedRow(from: []))
@@ -313,18 +313,5 @@ extension Arcade: TerminalDisplayable {
 		default:
 			fatalError("Default case")
 		}
-	}
-
-	// Given a single line string, make an array of terminal displayable points for that string, in default colors
-	private func terminalDisplayablePoints(for string: String,
-                                           foregroundColor: Color = .white,
-                                           backgroundColor: Color = .black) -> [TerminalDisplayablePoint]
-    {
-		var points = [TerminalDisplayablePoint]()
-		// top border
-		for char in string {
-			points.append(TerminalDisplayablePoint(character: Unicode.Scalar(String(char)) ?? Unicode.Scalar("o"), foregroundColor: foregroundColor, backgroundColor: backgroundColor))
-		}
-		return points
 	}
 }
