@@ -13,7 +13,7 @@ class TerminalDisplayer {
 		endwin()
 	}
 
-	func refreshTerminal(for displayable: TerminalDisplayable) {
+	func refreshTerminal(for displayable: TerminalDisplayable) {	
 		for (pair, index) in displayable.colorPairMap {
 			init_pair(Int16(index), ncursesColor(from: pair.first), ncursesColor(from: pair.second))
 		}
@@ -29,10 +29,6 @@ class TerminalDisplayer {
 				attroff(COLOR_PAIR(displayable.colorPairMap[ColorPair(first: point.foregroundColor, second: point.backgroundColor)] ?? 0))
 			}
 		}
-	}
-
-	func display(string: String) {
-		addstr(string)
 	}
 
 	private func windowCenteredPoints(from points: [[TerminalDisplayablePoint]]) -> [[TerminalDisplayablePoint]] {
