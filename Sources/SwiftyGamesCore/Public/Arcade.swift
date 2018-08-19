@@ -1,23 +1,17 @@
 import Darwin.ncurses
 
 public class Arcade {
-    
-	private enum State {
-			case arcadeMenu
-			case arcadeDone
-			case gameMenu
-			case gameActive
+
+	private enum ArcadeState {
+		case arcadeMenu
+		case arcadeDone
+		case gameMenuStart
+		case gameMenuBack
+		case gameActive
 	}
 
-	private enum GameMenuState {
-		case start
-		case back
-	}
-
-  private var state: State = .arcadeMenu
-
-	private var gameMenuState: GameMenuState?
-	private let startString = "Start"
+	private var arcadeState: ArcadeState = .arcadeMenu
+	private let startString = "Play"
 	private let backString = "Menu"
 	
 	private let displayer = TerminalDisplayer()
@@ -37,28 +31,28 @@ public class Arcade {
 	}
 
 	// Starts the arcade by showing the menu. i.e. the list of games to play
-    public func start() {
-			displayer.setupTerminal()
-			displayer.refreshTerminal(for: self)
-			var shouldExit = false
+	public func start() {
+		displayer.setupTerminal()
+		displayer.refreshTerminal(for: self)
+		var shouldExit = false
 
 
-      while !shouldExit {
-				switch state {
-				case .arcadeMenu, .gameMenu:
-					displayer.display(self)
-					input()
-				case .gameActive:
-					displayer.refreshTerminal(for: selectedGame)
-					playGame()
-					displayer.refreshTerminal(for: self)
-				case .arcadeDone:
-					shouldExit = true
-				}
-       }
-			 
-			 displayer.restoreTerminal()
-    }
+		while !shouldExit {
+			switch arcadeState {
+			case .arcadeMenu, .gameMenuStart, .gameMenuBack:
+				displayer.display(self)
+				input()
+			case .gameActive:
+				displayer.refreshTerminal(for: selectedGame)
+				playGame()
+				displayer.refreshTerminal(for: self)
+			case .arcadeDone:
+				shouldExit = true
+			}
+		 }
+		 
+		 displayer.restoreTerminal()
+	}
 
 	private func playGame() {
 		let game = selectedGame
@@ -71,8 +65,7 @@ public class Arcade {
 
 		game.reset()
 		
-		state = .gameMenu
-		gameMenuState = .start
+		arcadeState = .gameMenuStart
 	}	
 
 	private let titleLines: [String] = {
@@ -136,41 +129,33 @@ extension Arcade: TerminalInputReceivable {
         let input = getch()
         switch input {
         case 119: // w
-					if state == .arcadeMenu {
+					if arcadeState == .arcadeMenu {
             if selectedGameIndex > 0 {
                 selectedGameIndex -= 1
             }
-					} else if state == .gameMenu {
-						if gameMenuState == .back {
-							gameMenuState = .start
-						}
-					}
+					} else if arcadeState == .gameMenuBack {
+						arcadeState = .gameMenuStart
+					}	
         case 115: // s
-					if state == .arcadeMenu {
+					if arcadeState == .arcadeMenu {
             if selectedGameIndex < games.count - 1 {
                 selectedGameIndex += 1
             }
-					} else if state == .gameMenu {
-						gameMenuState = .back
-						if gameMenuState == .start {
-							gameMenuState = .back
-						}
+					} else if arcadeState == .gameMenuStart {
+						arcadeState = .gameMenuBack
 					}
         case 32: // space bar
-					if state == .arcadeMenu {
-						gameMenuState = .start
-						state = .gameMenu
-					} else if state == .gameMenu {
-						if gameMenuState == .start {
-							state = .gameActive
-							gameMenuState = nil
-						} else if gameMenuState == .back {
-							state = .arcadeMenu
-							gameMenuState = nil
-						}
+					if arcadeState == .arcadeMenu {
+						arcadeState = .gameMenuStart
+					} else if arcadeState == .gameMenuStart {
+						arcadeState = .gameActive
+					}	else if arcadeState == .gameMenuBack {
+						arcadeState = .arcadeMenu
 					}
         case 113: // q
-            state = .arcadeDone
+					if arcadeState == .arcadeMenu {
+            arcadeState = .arcadeDone
+					}
         default:
             break
         }
@@ -194,8 +179,8 @@ extension Arcade: TerminalDisplayable {
 
 	// The display for a game menu
 	private func pointsGameMenu() -> [[TerminalDisplayablePoint]] {
-		guard let menuState = self.gameMenuState else {
-			fatalError("gameMenuState should not be nil here")
+		guard arcadeState == .gameMenuStart || arcadeState == .gameMenuBack else {
+			fatalError("arcadeState \(arcadeState) is invalid")
 		}
 
 		var points = [[TerminalDisplayablePoint]]()
@@ -225,11 +210,11 @@ extension Arcade: TerminalDisplayable {
 		points.append(paddedRow(from: []))
 
 		// Start and back
-		let start = menuState == .start ?
+		let start = arcadeState == .gameMenuStart ?
 			 terminalDisplayablePoints(for: startString, foregroundColor: .black, backgroundColor: .white)
 			:terminalDisplayablePoints(for: startString, foregroundColor: .white, backgroundColor: .black)
 
-		let back = menuState == .back ?
+		let back = arcadeState == .gameMenuBack ?
 		   terminalDisplayablePoints(for: backString, foregroundColor: .black, backgroundColor: .white)
 			:terminalDisplayablePoints(for: backString, foregroundColor: .white, backgroundColor: .black)
 
@@ -315,10 +300,10 @@ extension Arcade: TerminalDisplayable {
 	}
 
 	func points() -> [[TerminalDisplayablePoint]] {
-		switch state {
+		switch arcadeState {
 		case .arcadeMenu:
 			return pointsArcadeMenu()
-		case .gameMenu:
+		case .gameMenuStart, .gameMenuBack:
 			return pointsGameMenu()
 		default:
 			fatalError("Default case")
