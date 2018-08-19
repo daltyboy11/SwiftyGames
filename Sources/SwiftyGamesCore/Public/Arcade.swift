@@ -204,6 +204,7 @@ extension Arcade: TerminalDisplayable {
 				+ [TerminalDisplayablePoint](repeating: horizontalBorderPoint, count: self.width)
 				+ [cornerBorderPoint])
 		
+		// Game info
 		points.append(paddedRow(from: terminalDisplayablePoints(for: selectedGame.gameInfo.title)))
 		points.append(paddedRow(from: []))
 		points.append(paddedRow(from: terminalDisplayablePoints(for: "By " + selectedGame.gameInfo.author)))
@@ -215,6 +216,15 @@ extension Arcade: TerminalDisplayable {
 
 		points.append(paddedRow(from: []))
 
+		points.append(paddedRow(from: terminalDisplayablePoints(for: "Commands")))
+		points.append(paddedRow(from: []))
+		for (key, description) in selectedGame.gameInfo.keyCommands {
+			points.append(paddedRow(from: terminalDisplayablePoints(for: "\(key) - " + description))) 
+		}
+
+		points.append(paddedRow(from: []))
+
+		// Start and back
 		let start = menuState == .start ?
 			 terminalDisplayablePoints(for: startString, foregroundColor: .black, backgroundColor: .white)
 			:terminalDisplayablePoints(for: startString, foregroundColor: .white, backgroundColor: .black)

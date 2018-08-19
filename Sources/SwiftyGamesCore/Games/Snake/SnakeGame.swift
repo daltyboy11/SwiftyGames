@@ -129,10 +129,10 @@ extension SnakeGame: Game {
 		let title = "Snake"
 		let author = "Dalton G. Sweeney"
 		let about = "Welcome to Snake, the classic arcade game!\n Eat as many fruits as you can without crashing into yourself."
-		let keyCommands: [Character: String] = ["w": "up",
-											 "a": "left",
-											 "s": "down",
-											 "d": "right"]
+		let keyCommands: [InputCommands] = [("w", "up"),
+																				("a", "left"),
+																				("s", "down"),
+																				("d", "right")]
 		return GameInfo(title: title, author: author, about: about, keyCommands: keyCommands)
 	}
 }

@@ -1,5 +1,7 @@
 import Foundation
 
+typealias InputCommands = (Character, String)
+
 struct GameInfo {
 	/// The game's title
 	let title: String
@@ -12,7 +14,7 @@ struct GameInfo {
 	let about: String
 
 	/// Keyboard commands for the game
-	let keyCommands: [Character: String]
+	let keyCommands: [InputCommands]
 }
 
 protocol Game: InputReceivable, TerminalDisplayable {
