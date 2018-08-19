@@ -212,6 +212,9 @@ extension SnakeGame: TerminalDisplayable {
 		points.append(bottomBorderRow)
 		points.reverse()
 
+		let info = terminalDisplayablePoints(for: self.gameInfo.title + " | Score:" + String(self.score()))
+		points.append(info)
+		
 		return points
 	}
 }
