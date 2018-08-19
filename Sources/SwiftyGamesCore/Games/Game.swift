@@ -18,10 +18,6 @@ struct GameInfo {
 }
 
 protocol Game: InputReceivable, TerminalDisplayable {
-
-	/// The current score for the game in play
-	func score() -> Int
-
 	/// True if the game has ended.
 	/// The game can end if the user loses or quits
 	func isOver() -> Bool

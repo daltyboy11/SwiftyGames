@@ -43,7 +43,6 @@ class SnakeGame {
 		return map
 	}()
 
-	// TODO: Actually make it not in snake
 	private func randomPositionNotInSnake() -> Position {
 		var randX = Int(arc4random_uniform(UInt32(self.width)))
 		var randY = Int(arc4random_uniform(UInt32(self.height)))
@@ -53,6 +52,11 @@ class SnakeGame {
 		}
 		return Position(x: randX, y: randY)
 	}
+
+	private func score() -> Int {
+		return self.snake.length
+	}
+
 }
 
 extension SnakeGame: TerminalInputReceivable {
@@ -92,10 +96,7 @@ extension SnakeGame: Game {
 		return "Snake"
 	}
 
-	func score() -> Int {
-		return self.snake.length
-	}
-
+	
 	// The game is other if the snake collides with itself or it tries to go out of bounds
 	func isOver() -> Bool {
 		return snake.bodyIntersects(snake.position)
