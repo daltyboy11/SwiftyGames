@@ -45,8 +45,9 @@ class TicTacToeGame {
 
 	private var board: [[Mark]] = [[Mark]](repeating: [Mark](repeating: .markBlank, count: 3), count: 3)
 	private var turn: Player = .one(.markX)
+
 	// We will use a position to locate where on the board to place a mark
-	// The x and y map to the indices in the board array
+	// position.x = row, position.y = column
 	private var position = Position(x: 0, y: 0)
 
 	private lazy var colorPairMapImpl: [ColorPair: Int32] = {
@@ -103,7 +104,11 @@ extension TicTacToeGame: Game {
 
 	func process() {
 		// The player should not be able to mark a spot that has alread been marked
-		guard board[position.x][position.y] != .markX || board[position.x][position.y] != .markO else {
+		guard board[position.x][position.y] != .markX else {
+			return
+		}
+
+		guard board[position.x][position.y] != .markO else {
 			return
 		}
 
@@ -144,19 +149,19 @@ extension TicTacToeGame: TerminalInputReceivable {
 		case 113: // q
 			position = Position(x: 0, y: 0)
 		case 119: // w
-			position = Position(x: 1, y: 0)
-		case 101: // e
-			position = Position(x: 2, y: 0)
-		case 97: // a
 			position = Position(x: 0, y: 1)
+		case 101: // e
+			position = Position(x: 0, y: 2)
+		case 97: // a
+			position = Position(x: 1, y: 0)
 		case 115: // s
 			position = Position(x: 1, y: 1)
 		case 100: // d
-			position = Position(x: 2, y: 1)
-		case 122: // z
-			position = Position(x: 0, y: 2)
-		case 120: // x
 			position = Position(x: 1, y: 2)
+		case 122: // z
+			position = Position(x: 2, y: 0)
+		case 120: // x
+			position = Position(x: 2, y: 1)
 		case 99: // c
 			position = Position(x: 2, y: 2)
 		default:
@@ -221,7 +226,6 @@ extension TicTacToeGame: TerminalDisplayable {
 	private var terminalMarkWidth: Int { return 12 }
 
 	private func terminalMark(for mark: Mark) -> [[TerminalDisplayablePoint]] {
-		return terminalMarkO()
 		switch mark {
 		case .markX:
 			return terminalMarkX()
