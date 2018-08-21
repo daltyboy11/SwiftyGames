@@ -71,28 +71,36 @@ class TicTacToeGame {
 						ColorPair(first: markPointHighlighted.foregroundColor, second: markPointHighlighted.backgroundColor)]
 	}
 
-		private func threeInARow(_ mark: Mark) -> Bool {
-		// Rows
-		for row in board {
+	// We go from left to right or from down to up
+	// This one is tedious :'(
+	private func threeInARow(_ mark: Mark) -> (Bool, Position, Position, Position) {
+		for (i, row) in board.enumerated() {
 			if row[0] == mark && row[1] == mark && row[2] == mark {
-				return true
+				return (true, Position(0, 0), Position(0, 1), Position(0, 2))
 			}
 		}
 
-		// Columns
-		if (board[0][0] == mark && board[1][0] == mark && board[2][0] == mark)
-		|| (board[0][1] == mark && board[1][1] == mark && board[2][1] == mark)
-		|| (board[0][2] == mark && board[1][2] == mark && board[2][2] == mark) {
-			return true
+		if (board[0][0] == mark && board[1][0] == mark && board[2][0] == mark) {
+			return (true, Position(0, 0), Position(1, 0), Position(2, 0))
+		}
+		
+		if (board[0][1] == mark && board[1][1] == mark && board[2][1] == mark) {
+			return (true, Position(0, 1), Position(1, 1), Position(2, 1))
 		}
 
-		// Diagonals
-		if (board[0][0] == mark && board[1][1] == mark && board[2][2] == mark)
-		|| (board[2][0] == mark && board[1][1] == mark && board[0][2] == mark) {
-			return true
+		if (board[0][2] == mark && board[1][2] == mark && board[2][2] == mark) {
+			return (true, Position(0, 2), Position(1, 2), Position(2, 2))
 		}
 
-		return false
+		if (board[0][0] == mark && board[1][1] == mark && board[2][2] == mark) {
+			return (true, Position(0, 0), Position(1, 1), Position(2, 2))
+		}
+
+		if (board[2][0] == mark && board[1][1] == mark && board[0][2] == mark) {
+			return (true, Position(2, 0), Position(1, 1), Position(0, 2))
+		}
+
+		return (false, Position(), Position(), Position())
 	}
 }
 
