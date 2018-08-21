@@ -104,6 +104,13 @@ class TicTacToeGame {
 	}
 }
 
+fileprivate extension Position {
+	func inTuple(_ tuple: (Bool, Position, Position, Position)) -> Bool {
+		guard tuple.0 else { return false }
+		return self == tuple.1 || self == tuple.2 || self == tuple.3
+	}
+}
+
 extension TicTacToeGame: Game {
 
 	func isOver() -> Bool {
@@ -199,9 +206,9 @@ extension TicTacToeGame: TerminalDisplayable {
 		points.append(blankRow)
 		// body
 		for (index, row) in board.enumerated() {
-			let left = terminalMark(for: row[0])
-			let middle = terminalMark(for: row[1])
-			let right = terminalMark(for: row[2])
+			let left = terminalMark(for: row[0], isHighlighted: Position(x: index, y: 0).inTuple(self.threeInARow(row[0])))
+			let middle = terminalMark(for: row[1], isHighlighted: Position(x: index, y: 1).inTuple(self.threeInARow(row[1])))
+			let right = terminalMark(for: row[2], isHighlighted: Position(x: index, y: 2).inTuple(self.threeInARow(row[2])))
 			for i in 0..<self.terminalMarkHeight {
 				points.append([borderPointVertical]
 										+ [blankPoint]
@@ -217,6 +224,7 @@ extension TicTacToeGame: TerminalDisplayable {
 										+ [blankPoint]
 										+ [borderPointVertical])
 			}
+
 			if index < 2 {
 				points.append(blankRow)
 				points.append(borderRow)
@@ -233,20 +241,20 @@ extension TicTacToeGame: TerminalDisplayable {
 	private var terminalMarkHeight: Int { return 8 }
 	private var terminalMarkWidth: Int { return 12 }
 
-	private func terminalMark(for mark: Mark) -> [[TerminalDisplayablePoint]] {
+	private func terminalMark(for mark: Mark, isHighlighted: Bool = false) -> [[TerminalDisplayablePoint]] {
 		switch mark {
 		case .markX:
-			return terminalMarkX()
+			return terminalMarkX(isHighlighted: isHighlighted)
 		case .markO:
-			return terminalMarkO()
+			return terminalMarkO(isHighlighted: isHighlighted)
 		case .markBlank:
 			return terminalMarkBlank()
 		}
 	}
 
-	private func terminalMarkX() -> [[TerminalDisplayablePoint]] {
-		let twoMarks = [markPoint, markPoint]
-		let threeMarks = twoMarks + [markPoint]
+	private func terminalMarkX(isHighlighted: Bool) -> [[TerminalDisplayablePoint]] {
+		let twoMarks = isHighlighted ? [markPointHighlighted, markPointHighlighted] : [markPoint, markPoint]
+		let threeMarks = isHighlighted ? [markPointHighlighted] + twoMarks : [markPoint] + twoMarks
 		let twoBlanks = [blankPoint, blankPoint]
 		let threeBlanks = twoBlanks + [blankPoint]
 
@@ -265,9 +273,16 @@ extension TicTacToeGame: TerminalDisplayable {
 						first]
 	}
 
-	private func terminalMarkO() -> [[TerminalDisplayablePoint]] {
-		let topBottom = [blankPoint, markPoint] + [TerminalDisplayablePoint](repeating: markPoint, count: 8) + [markPoint, blankPoint]
-		let middle = [markPoint, markPoint] + [TerminalDisplayablePoint](repeating: blankPoint, count: 8) + [markPoint, markPoint]
+	private func terminalMarkO(isHighlighted: Bool) -> [[TerminalDisplayablePoint]] {
+		let topBottom: [TerminalDisplayablePoint]
+		let middle: [TerminalDisplayablePoint]
+		if isHighlighted {
+			topBottom = [blankPoint, markPointHighlighted] + [TerminalDisplayablePoint](repeating: markPointHighlighted, count: 8) + [markPointHighlighted, blankPoint]
+			middle = [markPointHighlighted, markPointHighlighted] + [TerminalDisplayablePoint](repeating: blankPoint, count: 8) + [markPointHighlighted, markPointHighlighted]
+		} else {
+			topBottom = [blankPoint, markPoint] + [TerminalDisplayablePoint](repeating: markPoint, count: 8) + [markPoint, blankPoint]
+			middle = [markPoint, markPoint] + [TerminalDisplayablePoint](repeating: blankPoint, count: 8) + [markPoint, markPoint]
+		}
 		return [topBottom,
 						middle,
 						middle,
