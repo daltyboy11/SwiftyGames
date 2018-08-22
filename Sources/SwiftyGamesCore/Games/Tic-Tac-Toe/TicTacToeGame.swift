@@ -55,7 +55,7 @@ class TicTacToeGame {
 	private var board: [[Mark]] = [[Mark]](repeating: [Mark](repeating: .markBlank, count: 3), count: 3)
 	private var turn: Player = .one(.markX)
 	private var quit = false
-	private var justReset = false
+	private var playerJustReset = false
 
 	// We will use a position to locate where on the board to place a mark
 	// position.x = row, position.y = column
@@ -131,8 +131,8 @@ extension TicTacToeGame: Game {
 	}
 
 	func process() {
-		guard !justReset else {
-			justReset = false
+		guard !playerJustReset else {
+			playerJustReset = false
 			return
 		}
 
@@ -158,7 +158,6 @@ extension TicTacToeGame: Game {
 		board = [[Mark]](repeating: [Mark](repeating: .markBlank, count: 3), count: 3)
 		turn = .one(.markX)
 		quit = false
-		justReset = true
 	}
 	
 	var gameInfo: GameInfo {
@@ -207,6 +206,7 @@ extension TicTacToeGame: TerminalInputReceivable {
 		case 121: // y, restart game
 			if threeInARow(.markX).0 || threeInARow(.markO).0 {
 				self.reset()
+				playerJustReset = true
 			}
 		case 110: // n, quit game
 			if threeInARow(.markX).0 || threeInARow(.markO).0 {
