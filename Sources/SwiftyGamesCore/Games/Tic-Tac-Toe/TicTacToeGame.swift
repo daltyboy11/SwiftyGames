@@ -19,9 +19,18 @@ class TicTacToeGame {
 		}
 	}
 
-	private enum Player {
+	private enum Player: CustomStringConvertible {
 		case one(Mark)
 		case two(Mark)
+
+		var description: String {
+			switch self {
+			case .one:
+				return "Player One"
+			case .two:
+				return "Player Two"
+			}
+		}
 
 		func toggle() -> Player {
 			switch self {
@@ -45,11 +54,14 @@ class TicTacToeGame {
 
 	private var board: [[Mark]] = [[Mark]](repeating: [Mark](repeating: .markBlank, count: 3), count: 3)
 	private var turn: Player = .one(.markX)
+	private var quit = false
+	private var justReset = false
 
 	// We will use a position to locate where on the board to place a mark
 	// position.x = row, position.y = column
 	private var position = Position(x: 0, y: 0)
 
+	// For the TerminalDisplayable conformance
 	private lazy var colorPairMapImpl: [ColorPair: Int32] = {
 		var map = [ColorPair: Int32]()
 		for (index, pair) in self.colorPairs().enumerated() {
@@ -65,6 +77,7 @@ class TicTacToeGame {
 	private let markPoint = TerminalDisplayablePoint(character: " ", foregroundColor: .black, backgroundColor: .white)
 	private let markPointHighlighted = TerminalDisplayablePoint(character: " ", foregroundColor: .black, backgroundColor: .green)
 
+	// Return the unique color pairs for the tpyes of points we'll be using
 	private func colorPairs() -> [ColorPair] {
 		return [ColorPair(first: borderPointHorizontal.foregroundColor, second: borderPointHorizontal.backgroundColor),
 						ColorPair(first: markPoint.foregroundColor, second: markPoint.backgroundColor),
@@ -76,7 +89,7 @@ class TicTacToeGame {
 	private func threeInARow(_ mark: Mark) -> (Bool, Position, Position, Position) {
 		for (i, row) in board.enumerated() {
 			if row[0] == mark && row[1] == mark && row[2] == mark {
-				return (true, Position(0, 0), Position(0, 1), Position(0, 2))
+				return (true, Position(i, 0), Position(i, 1), Position(i, 2))
 			}
 		}
 
@@ -114,10 +127,15 @@ fileprivate extension Position {
 extension TicTacToeGame: Game {
 
 	func isOver() -> Bool {
-		return false
+		return quit
 	}
 
 	func process() {
+		guard !justReset else {
+			justReset = false
+			return
+		}
+
 		// The player should not be able to mark a spot that has alread been marked
 		guard board[position.x][position.y] != .markX else {
 			return
@@ -129,11 +147,18 @@ extension TicTacToeGame: Game {
 
 		board[position.x][position.y] = turn.mark()
 		
+		if threeInARow(.markX).0 || threeInARow(.markO).0 {
+			return
+		}
+
 		turn = turn.toggle()
 	}
 
 	func reset() {
-		fatalError("Implement me")
+		board = [[Mark]](repeating: [Mark](repeating: .markBlank, count: 3), count: 3)
+		turn = .one(.markX)
+		quit = false
+		justReset = true
 	}
 	
 	var gameInfo: GameInfo {
@@ -179,6 +204,14 @@ extension TicTacToeGame: TerminalInputReceivable {
 			position = Position(x: 2, y: 1)
 		case 99: // c
 			position = Position(x: 2, y: 2)
+		case 121: // y, restart game
+			if threeInARow(.markX).0 || threeInARow(.markO).0 {
+				self.reset()
+			}
+		case 110: // n, quit game
+			if threeInARow(.markX).0 || threeInARow(.markO).0 {
+				quit = true
+			}
 		default:
 			break
 		}
@@ -235,6 +268,12 @@ extension TicTacToeGame: TerminalDisplayable {
 		points.append(blankRow)
 		points.append(borderRow)
 
+		// Info
+		if threeInARow(.markX).0 || threeInARow(.markO).0 {
+			points.append(terminalDisplayablePoints(for: String(describing: turn) + " wins! Play again? (y/n)"))
+		} else {
+			points.append(terminalDisplayablePoints(for: "To move: " + String(describing: turn)))
+		}
 		return points
 	}
 
@@ -260,8 +299,8 @@ extension TicTacToeGame: TerminalDisplayable {
 
 		let first = threeMarks + threeBlanks + threeBlanks + threeMarks
 		let second = twoBlanks + twoMarks + twoBlanks + twoBlanks + twoMarks + twoBlanks
-		let third = threeBlanks + [markPoint, markPoint] + twoBlanks + [markPoint, markPoint] + threeBlanks
-		let fourth = threeBlanks + [blankPoint] + threeMarks + [markPoint] + threeBlanks + [blankPoint]
+		let third = threeBlanks + twoMarks + twoBlanks + twoMarks + threeBlanks
+		let fourth = threeBlanks + [blankPoint] + threeMarks + [isHighlighted ? markPointHighlighted : markPoint] + threeBlanks + [blankPoint]
 
 		return [first,
 						second,
