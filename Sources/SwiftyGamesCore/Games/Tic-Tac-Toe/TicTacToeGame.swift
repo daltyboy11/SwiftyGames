@@ -56,6 +56,7 @@ class TicTacToeGame {
 	private var turn: Player = .one(.markX)
 	private var quit = false
 	private var playerJustReset = false
+	private var shouldProcessInput = false
 
 	// We will use a position to locate where on the board to place a mark
 	// position.x = row, position.y = column
@@ -131,7 +132,7 @@ extension TicTacToeGame: Game {
 	}
 
 	func process() {
-		guard !playerJustReset else {
+		guard !playerJustReset, shouldProcessInput else {
 			playerJustReset = false
 			return
 		}
@@ -164,8 +165,8 @@ extension TicTacToeGame: Game {
 		let title = "Tic-Tac-Toe"
 		let author = "Dalton G. Sweeney"
 		let about = """
-		Player one is X and player two is O.\n
-		Take turns marking the spaces on the board.\n
+		Player one is X and player two is O.
+		Take turns marking the spaces on the board.
 		Place three in a row horizontally, vertically, or diagonally to win!
 		"""
 		let keyCommands: [InputCommands] = [("q", "mark top left"),
@@ -183,6 +184,7 @@ extension TicTacToeGame: Game {
 
 extension TicTacToeGame: TerminalInputReceivable {
 	func input() {
+		shouldProcessInput = true
 		let c: Int32 = getch()
 		switch c {
 		case 113: // q
@@ -213,6 +215,7 @@ extension TicTacToeGame: TerminalInputReceivable {
 				quit = true
 			}
 		default:
+			shouldProcessInput = false
 			break
 		}
 	}
