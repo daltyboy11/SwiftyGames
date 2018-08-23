@@ -25,7 +25,8 @@ public class Arcade {
 	}
 
 	public init() {
-		self.games = [SnakeGame(),
+		self.games = [MazeGame(),
+									SnakeGame(),
 									TicTacToeGame()]
 		self.selectedGame = games[0]
 		self.selectedGameIndex = 0
