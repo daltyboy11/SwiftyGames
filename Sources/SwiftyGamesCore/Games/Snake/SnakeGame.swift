@@ -158,11 +158,11 @@ extension SnakeGame: TerminalDisplayable {
 	}
 
 	private var verticalBorderPoint: TerminalDisplayablePoint {
-		return TerminalDisplayablePoint(character: "|", foregroundColor: .white, backgroundColor: .black)
+		return TerminalDisplayablePoint(character: "|", foregroundColor: .white, backgroundColor: .white)
 	}
 	
 	private var horizontalBorderPoint: TerminalDisplayablePoint {
-		return TerminalDisplayablePoint(character: "-", foregroundColor: .white, backgroundColor: .black)
+		return TerminalDisplayablePoint(character: "-", foregroundColor: .white, backgroundColor: .white)
 	}
 
 	var colorPairMap: [ColorPair: Int32] {
