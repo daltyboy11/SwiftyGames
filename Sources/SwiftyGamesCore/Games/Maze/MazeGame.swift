@@ -134,7 +134,7 @@ extension MazeGame: Game {
                 position = Position(x: position.x, y: position.y - 1)
             }
         case .down:
-            if position.y + 1 < self.width && maze[position.y + 1][position.x] != .wall {
+            if position.y + 1 < self.height && maze[position.y + 1][position.x] != .wall {
                 position = Position(x: position.x, y: position.y + 1)
             }
         case .left:
