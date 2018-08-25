@@ -1,6 +1,6 @@
 import Darwin.ncurses
 
-class TicTacToeGame {
+final class TicTacToeGame {
 
 	private enum Mark {
 		case markX

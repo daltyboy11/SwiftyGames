@@ -1,20 +1,26 @@
 import Darwin.ncurses
 
-class MazeGame {
+fileprivate func random(lo: Int, hi: Int) -> Int {
+	precondition(hi >= lo, "Invalid range: \(lo)...\(hi)")
+	return Int(arc4random_uniform(UInt32(hi) - UInt32(lo) + 1)) + lo
+}
+
+final class MazeGame {
 
 	private enum MazeCell {
-		case player
 		case wall
 		case floor
 	}
 
+	// The representation of the maze
 	private var maze = [[MazeCell]]()
 	private var direction: Direction = .up
 	private var quit = false
 	private var areYouSure = false
 
-	private let width: Int = 55
-	private let height: Int = 35
+	private let width: Int = 41
+	private let height: Int = 31
+    private var position: Position = .zero
 
 	private lazy var colorPairMapImpl: [ColorPair: Int32] = {
 		var map = [ColorPair: Int32]()
@@ -25,38 +31,76 @@ class MazeGame {
 	}()
 
 	init() {
-		maze = self.generateMaze()
+		maze = newMaze(width: self.width, height: self.height)
 	}
 
-	private func generateMaze() -> [[MazeCell]] {
-		// The starter maze simply has borders on all sides. A single chamber
-		var starterMaze = [[MazeCell]]()
-		starterMaze.append([MazeCell](repeating: .wall, count: self.width))
-		for _ in 0..<(self.height - 2) {
-			starterMaze.append([.wall] + [MazeCell](repeating: .floor, count: self.width - 2) + [.wall])
+	private func newMaze(width: Int, height: Int) -> [[MazeCell]] {
+        var cells = [[MazeCell]](repeating: [MazeCell](repeating: .wall, count: width), count: height)
+		
+		var visited = [[Bool]](repeating: [Bool](repeating: false, count: width), count: height)
+		var stack = [Position.zero]
+
+		while !stack.isEmpty {
+			let pos = stack.last!
+			visited[pos.y][pos.x] = true
+			cells[pos.y][pos.x] = .floor
+
+			var unvisitedNeighbors = [Direction]()
+
+			// Left
+			if pos.x - 2 >= 0 && !visited[pos.y][pos.x - 2] {
+				unvisitedNeighbors.append(.left)
+			}
+
+			// Right
+			if pos.x + 2 < width && !visited[pos.y][pos.x + 2] {
+				unvisitedNeighbors.append(.right)
+			}
+
+			// Up
+			if pos.y - 2 >= 0 && !visited[pos.y - 2][pos.x] {
+				unvisitedNeighbors.append(.up)
+			}
+
+			// Down
+			if pos.y + 2 < height && !visited[pos.y + 2][pos.x] {
+				unvisitedNeighbors.append(.down)
+			}
+
+			if !unvisitedNeighbors.isEmpty {
+				let randomIndex = random(lo: 0, hi: unvisitedNeighbors.count - 1)
+				let dir = unvisitedNeighbors[randomIndex]
+				switch dir {
+				case .left:
+					cells[pos.y][pos.x - 1] = .floor
+					stack.append(Position(x: pos.x - 2, y: pos.y))
+				case .right:
+					cells[pos.y][pos.x + 1] = .floor
+					stack.append(Position(x: pos.x + 2, y: pos.y))
+				case .up:
+					cells[pos.y - 1][pos.x] = .floor
+					stack.append(Position(x: pos.x, y: pos.y - 2))
+				case .down:
+					cells[pos.y + 1][pos.x] = .floor
+					stack.append(Position(x: pos.x, y: pos.y + 2))
+				}
+			} else {
+				stack.removeLast()
+			}
 		}
-		starterMaze.append([MazeCell](repeating: .wall, count: self.width))
-		//generateMazeHelper(staterMaze)
-		return starterMaze
-	}
 
-	// A chamber is represented by its four corners, topLeft, topRight, bottomLeft, and bottomRight
-	private func generateMazeHelper(_ maze: inout [[MazeCell]], topLeft: Int, topRight: Int, bottomLeft: Int, bottomRight: Int) {
-		// If the chamber is now a single hallway, we can return
-		guard abs(topLeft - bottomLeft) > 2 && abs(topLeft - topRight) > 2 else {
-			return
-		}
-
-
+		return cells
 	}
 
 	private let floorPoint = TerminalDisplayablePoint(character: " ", foregroundColor: .white, backgroundColor: .black)
 	private let borderPoint = TerminalDisplayablePoint(character: " ", foregroundColor: .white, backgroundColor: .white)
-	private let playerPoint = TerminalDisplayablePoint(character: "o", foregroundColor: .yellow, backgroundColor: .black)
+	private let playerPoint = TerminalDisplayablePoint(character: " ", foregroundColor: .yellow, backgroundColor: .yellow)
+    private let finishPoint = TerminalDisplayablePoint(character: " ", foregroundColor: .green, backgroundColor: .green)
 
 	private func colorPairs() -> [ColorPair] {
 		return [ColorPair(first: borderPoint.foregroundColor, second: borderPoint.backgroundColor),
-						ColorPair(first: playerPoint.foregroundColor, second: playerPoint.backgroundColor)]
+                ColorPair(first: playerPoint.foregroundColor, second: playerPoint.backgroundColor),
+                ColorPair(first: finishPoint.foregroundColor, second: finishPoint.foregroundColor)]
 	}
 }
 
@@ -76,16 +120,32 @@ extension MazeGame: Game {
 	}
 
 	func isOver() -> Bool {
-		return false
-		fatalError("Implement me")
+		return quit
 	}
 
 	func reset() {
-		fatalError("Implement me")
+        
 	}
 
 	func process() {
-		fatalError("Implement me")
+        switch direction {
+        case .up:
+            if position.y - 1 >= 0 && maze[position.y - 1][position.x] != .wall {
+                position = Position(x: position.x, y: position.y - 1)
+            }
+        case .down:
+            if position.y + 1 < self.width && maze[position.y + 1][position.x] != .wall {
+                position = Position(x: position.x, y: position.y + 1)
+            }
+        case .left:
+            if position.x - 1 >= 0 && maze[position.y][position.x - 1] != .wall {
+                position = Position(x: position.x - 1, y: position.y)
+            }
+        case .right:
+            if position.x + 1 < self.width && maze[position.y][position.x + 1] != .wall {
+                position = Position(x: position.x + 1, y: position.y)
+            }
+        }
 	}
 }
 
@@ -95,18 +155,21 @@ extension MazeGame: TerminalDisplayable {
 	}
 
 	func points() -> [[TerminalDisplayablePoint]] {
-		return maze.map { row -> [TerminalDisplayablePoint] in
-			return row.map({ cell -> TerminalDisplayablePoint in
+        var points = maze.map { row -> [TerminalDisplayablePoint] in
+			return [borderPoint] + row.map({ cell -> TerminalDisplayablePoint in
 										switch cell {
 										case .wall:
 											return borderPoint
 										case .floor:
 											return floorPoint
-										case .player:
-											return playerPoint
 										}
-									})
+									}) + [borderPoint]
 		}
+        points[position.y][position.x + 1] = playerPoint
+        points[self.height - 1][self.width] = finishPoint
+        points.insert([TerminalDisplayablePoint](repeating: borderPoint, count: self.width + 2), at: 0)
+        points.append([TerminalDisplayablePoint](repeating: borderPoint, count: self.width + 2))
+        return points
 	}
 }
 
@@ -122,8 +185,8 @@ extension MazeGame: InputReceivable {
 			direction = .down
 		case 100: // d
 			direction = .right
-		case 113:
-			areYouSure = true
+		case 113: //
+			quit = true
 		default:
 			break
 		}

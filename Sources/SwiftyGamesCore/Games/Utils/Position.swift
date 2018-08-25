@@ -19,3 +19,9 @@ extension Position {
 		return Position(x: 0, y: 0)
 	}
 }
+
+extension Position: CustomStringConvertible {
+    var description: String {
+        return "(\(self.x), \(self.y)"
+    }
+}

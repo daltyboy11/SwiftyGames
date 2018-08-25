@@ -1,6 +1,6 @@
 import Darwin.ncurses
 
-class Snake {
+final class Snake {
 
 	private struct Constants {
 		static let initialBodyLength: UInt = 3

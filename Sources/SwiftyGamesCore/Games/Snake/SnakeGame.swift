@@ -5,7 +5,7 @@ import Darwin.ncurses
 // ^
 // |
 // -->
-class SnakeGame {
+final class SnakeGame {
 
 	private let width: Int
 	private let height: Int
