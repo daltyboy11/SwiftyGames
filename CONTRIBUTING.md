@@ -79,7 +79,7 @@ extension MyGame: TerminalDisplayable {
 	
 	func colorPairs() -> [ColorPair] {
 		return [ColorPair(first: .green, second: .green),
-						ColorPair(first: .blue, second: .blue)]
+			ColorPair(first: .blue, second: .blue)]
 	}
 
 	func points() -> [[TerminalDisplayablePoint]] {
