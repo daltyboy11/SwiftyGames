@@ -21,11 +21,11 @@ protocol Game: InputReceivable, TerminalDisplayable {
 }
 ```
 
-`gameInfo` is used by the arcade to display various info about the game like author, description, and keyboard commands. 
-
 `isOver()` and `process()` are used by the arcade in the game loop.
 
 `reset()` should return the game to a before state before the game has started. Basically an `init()` without creating a new instance.
+
+`gameInfo` is a struct that encapsulates various info about the game, like author, description, and keyboard commands. The arcade displays this information in the game's menu. 
 
 ## Handling input
 
