@@ -21,11 +21,11 @@ protocol Game: InputReceivable, TerminalDisplayable {
 }
 ```
 
-`gameInfo` is used by the arcade to display various info about the game, like author, description, and keyboard commands. 
+`gameInfo` is used by the arcade to display various info about the game like author, description, and keyboard commands. 
 
-`isOver()` and `process()` are used by the arcade in game loop
+`isOver()` and `process()` are used by the arcade in the game loop.
 
-`reset()` is to return the game to state before it has been played. Basically an `init()` without creating a new instance
+`reset()` should return the game to a before state before the game has started. Basically an `init()` without creating a new instance.
 
 ## Handling input
 
@@ -55,7 +55,7 @@ It may, of course, get more complicated than this example ;).
 
 ## Displaying your game on the terminal
 
-Your game tells the displayer how to display itself through the `TerminalDisplayableProtocol`
+Your game tells the displayer how to display itself through the `TerminalDisplayable` protocol.
 
 ```swift
 protocol TerminalDisplayable { 
@@ -63,14 +63,14 @@ protocol TerminalDisplayable {
 	// Supported (foreground, background) color pairs for the game
 	func colorPairs() -> [ColorPair]
   
-  // The 2D array of points to display in the terminal using ncurses
-  func points() -> [[TerminalDisplayablePoint]] 
+  	// The 2D array of points to display in the terminal using ncurses
+  	func points() -> [[TerminalDisplayablePoint]] 
 } 
 ```
 
-`colorPairs()` supplies all the supported (foreground, background) color pairs that need to be supported for your game. If the displayer encounters a point to be displayed with an unsupported color pair, it will default to displaying a character with a white foreground and black background.
+`colorPairs()` supplies all the supported (foreground, background) color pairs that need to be supported for your game. If the displayer encounters an unsupported (foreground, background) pair while trying to draw your game, it will default to a white foreground and black background.
 
-`points()` is the 2D array of points that get drawn on the terminal. Each point specifies an ascii character, foreground color, and background color.
+`points()` is the 2D array of points that gets drawn in the terminal. Each point specifies an ascii character, foreground color, and background color.
 
 Here is an example of a game that displays an 8x8 green and blue checkerboard
 
@@ -97,3 +97,24 @@ extension MyGame: TerminalDisplayable {
 	}
 }
 ```
+
+## Adding your game to the arcade
+
+Simply add your game to the arcade's list of games in the intializer
+
+```swift
+public init() {
+	self.games = [MazeGame(),
+		      SnakeGame(),
+		      ...,
+		      MyGame()]
+	// more init stuff
+}
+```
+
+Your game is now playable in the arcade!
+
+## File structure
+
+* Create a folder for your game in `Sources/SwiftyGamesCore/Games/`. This folder will contain your game and any helper swift files.
+* The naming convention for your game class is `final class XYZGame`, where `XYZ` is the name of your game.
