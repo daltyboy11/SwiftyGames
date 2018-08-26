@@ -14,6 +14,7 @@ class TerminalDisplayer {
 	}
 
 	func refreshTerminal(for displayable: TerminalDisplayable) {	
+		cbreak()
 		for (pair, index) in displayable.colorPairMap {
 			init_pair(Int16(index), ncursesColor(from: pair.first), ncursesColor(from: pair.second))
 		}
