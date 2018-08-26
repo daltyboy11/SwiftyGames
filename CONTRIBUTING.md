@@ -1,8 +1,8 @@
 # Contributing Guide
 
-## Game.swift
+## The Game Protocol
 
-This is the protocol your game must adopt to be used by the arcade.
+`Game` is the protocol your game must adopt to be used by the arcade.
 
 ```swift
 protocol Game: InputReceivable, TerminalDisplayable {
