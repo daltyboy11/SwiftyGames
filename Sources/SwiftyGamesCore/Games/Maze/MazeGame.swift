@@ -13,7 +13,8 @@ final class MazeGame {
 	}
 
 	private var maze = [[MazeCell]]()
-	private var direction: Direction = .up
+
+	private var direction: Direction?
 
 	private var quit = false
 	private var playerFinishedMaze = false
@@ -134,12 +135,17 @@ extension MazeGame: Game {
 		areYouSure = false
 		playerFinishedMaze = false
 		position = .zero
+		direction = nil
 		maze = newMaze(width: self.width, height: self.height)
 	}
 
 	func process() {
 		guard !playerFinishedMaze,
 	        !areYouSure	else {
+			return
+		}
+
+		guard let direction = self.direction else {
 			return
 		}
 
@@ -218,10 +224,12 @@ extension MazeGame: InputReceivable {
 		case 100: // d
 			direction = .right
 		case 113: // q
+			direction = nil
 			if !playerFinishedMaze {
 				areYouSure = true
 			}
 		case 121: // y
+		  direction = nil
 			if areYouSure {
 				quit = true
 			}
@@ -230,6 +238,7 @@ extension MazeGame: InputReceivable {
 				reset()
 			}
 		case 110: // n
+			direction = nil
 			if areYouSure {
 				areYouSure = false
 			}
@@ -238,6 +247,7 @@ extension MazeGame: InputReceivable {
 				quit = true
 			}
 		default:
+			direction = nil
 			break
 		}
 	}
