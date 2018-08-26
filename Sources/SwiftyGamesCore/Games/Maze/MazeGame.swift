@@ -12,15 +12,17 @@ final class MazeGame {
 		case floor
 	}
 
-	// The representation of the maze
 	private var maze = [[MazeCell]]()
 	private var direction: Direction = .up
+
 	private var quit = false
+	private var playerFinishedMaze = false
 	private var areYouSure = false
 
 	private let width: Int = 41
 	private let height: Int = 31
-    private var position: Position = .zero
+  private var position: Position = .zero
+	private var finishPosition: Position = Position(x: 40, y: 30)
 
 	private lazy var colorPairMapImpl: [ColorPair: Int32] = {
 		var map = [ColorPair: Int32]()
@@ -109,7 +111,11 @@ extension MazeGame: Game {
 	var gameInfo: GameInfo {
 		let title = "Maze"
 		let author = "Dalton G. Sweeney"
-		let about = "Navigate the maze in as little time as possible!"
+		let about = 
+		"""
+			Navigate from the top corner to the bottom corner
+			of the maze in as little time as possible!
+		"""
 		let keyCommands: [InputCommands] =
 			[("w", "up"),
 			 ("a", "left"),
@@ -124,28 +130,41 @@ extension MazeGame: Game {
 	}
 
 	func reset() {
-        
+		quit = false
+		areYouSure = false
+		playerFinishedMaze = false
+		position = .zero
+		maze = newMaze(width: self.width, height: self.height)
 	}
 
 	func process() {
-        switch direction {
-        case .up:
-            if position.y - 1 >= 0 && maze[position.y - 1][position.x] != .wall {
-                position = Position(x: position.x, y: position.y - 1)
-            }
-        case .down:
-            if position.y + 1 < self.height && maze[position.y + 1][position.x] != .wall {
-                position = Position(x: position.x, y: position.y + 1)
-            }
-        case .left:
-            if position.x - 1 >= 0 && maze[position.y][position.x - 1] != .wall {
-                position = Position(x: position.x - 1, y: position.y)
-            }
-        case .right:
-            if position.x + 1 < self.width && maze[position.y][position.x + 1] != .wall {
-                position = Position(x: position.x + 1, y: position.y)
-            }
-        }
+		guard !playerFinishedMaze,
+	        !areYouSure	else {
+			return
+		}
+
+		switch direction {
+		case .up:
+				if position.y - 1 >= 0 && maze[position.y - 1][position.x] != .wall {
+						position = Position(x: position.x, y: position.y - 1)
+				}
+		case .down:
+				if position.y + 1 < self.height && maze[position.y + 1][position.x] != .wall {
+						position = Position(x: position.x, y: position.y + 1)
+				}
+		case .left:
+				if position.x - 1 >= 0 && maze[position.y][position.x - 1] != .wall {
+						position = Position(x: position.x - 1, y: position.y)
+				}
+		case .right:
+				if position.x + 1 < self.width && maze[position.y][position.x + 1] != .wall {
+						position = Position(x: position.x + 1, y: position.y)
+				}
+		}
+
+		if position == finishPosition {
+			playerFinishedMaze = true
+		}
 	}
 }
 
@@ -166,9 +185,22 @@ extension MazeGame: TerminalDisplayable {
 									}) + [borderPoint]
 		}
         points[position.y][position.x + 1] = playerPoint
-        points[self.height - 1][self.width] = finishPoint
+        points[finishPosition.y][finishPosition.x + 1] = finishPoint
         points.insert([TerminalDisplayablePoint](repeating: borderPoint, count: self.width + 2), at: 0)
         points.append([TerminalDisplayablePoint](repeating: borderPoint, count: self.width + 2))
+				
+				if playerFinishedMaze {
+					points.append(terminalDisplayablePoints(for: "Well done! Would you like to play again? (y/n)"))
+				}
+
+				if areYouSure {
+					points.append(terminalDisplayablePoints(for: "Are you sure you want to quit? (y/n)"))
+				}
+
+				if !areYouSure && !playerFinishedMaze {
+					points.append(terminalDisplayablePoints(for: "Maze"))
+				}
+
         return points
 	}
 }
@@ -185,8 +217,26 @@ extension MazeGame: InputReceivable {
 			direction = .down
 		case 100: // d
 			direction = .right
-		case 113: //
-			quit = true
+		case 113: // q
+			if !playerFinishedMaze {
+				areYouSure = true
+			}
+		case 121: // y
+			if areYouSure {
+				quit = true
+			}
+
+			if playerFinishedMaze {
+				reset()
+			}
+		case 110: // n
+			if areYouSure {
+				areYouSure = false
+			}
+
+			if playerFinishedMaze {
+				quit = true
+			}
 		default:
 			break
 		}
