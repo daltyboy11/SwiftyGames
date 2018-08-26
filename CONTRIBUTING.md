@@ -114,6 +114,10 @@ public init() {
 
 Your game is now playable in the arcade!
 
+## Testing
+
+You will want to iteratively test your game during development. To do this, you can use the `run.sh` script in the top level directory. This will build and launch the executable without adding it to your /usr/local/bin.
+
 ## File structure
 
 * Create a folder for your game in `Sources/SwiftyGamesCore/Games/`. This folder will contain your game and any helper swift files.
