@@ -1,4 +1,4 @@
-# Contributing Guide
+# Contribution Guide
 
 ## The Game Protocol
 
