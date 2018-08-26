@@ -11,6 +11,7 @@ final class SnakeGame {
 	private let height: Int
 
 	private var quit = false
+	private var snakeHasCollided = false
 
 	private var fruitPosition: Position = .zero
 	var snake: Snake
@@ -61,24 +62,44 @@ final class SnakeGame {
 
 extension SnakeGame: TerminalInputReceivable {
 	func input() {
-		halfdelay(1)
+		if !snakeHasCollided {
+			halfdelay(1)
+		} else {
+			cbreak()
+		}
 		var shouldModifyDirectionOfSnake = true
 		let input: Int32 = getch()
-		let inputDirection: Direction
+		var inputDirection: Direction = snake.direction
 		switch input {
 		case 119: // w
+		if !snakeHasCollided {
 			inputDirection = .up
+		}
 		case 115: // s
+		if !snakeHasCollided {
 			inputDirection = .down
+		}
 		case 97: // a
+		if !snakeHasCollided {
 			inputDirection = .left
+		}
 		case 100: // d
+		if !snakeHasCollided {
 			inputDirection = .right
+		}
 		case 113: // q
-			inputDirection = .up // dummy value, we are quitting
+		if !snakeHasCollided {
 			quit = true
+		}
+		case 121: // y
+			if snakeHasCollided {
+				self.reset()
+			}
+		case 110: // n
+			if snakeHasCollided {
+				quit = true
+			}
 		default:
-			inputDirection = .up // dummy value, invalid key type 
 			shouldModifyDirectionOfSnake = false
 		}
 
@@ -99,12 +120,7 @@ extension SnakeGame: Game {
 	
 	// The game is other if the snake collides with itself or it tries to go out of bounds
 	func isOver() -> Bool {
-		return snake.bodyIntersects(snake.position)
-		|| snake.position.x < 0
-		|| snake.position.x >= self.width
-		|| snake.position.y < 0
-		|| snake.position.y >= self.height
-		|| quit
+		return quit
 	}
 
 	func process() {
@@ -114,6 +130,14 @@ extension SnakeGame: Game {
 		}
 
 		snake.advance()
+
+		if snake.bodyIntersects(snake.position)
+		|| snake.position.x < 0
+		|| snake.position.x >= self.width
+		|| snake.position.y < 0
+		|| snake.position.y >= self.height {
+			snakeHasCollided = true
+		}
 	}
 
 	func reset() {
@@ -124,6 +148,7 @@ extension SnakeGame: Game {
 		self.fruitPosition = randomPositionNotInSnake()
 		
 		self.quit = false
+		self.snakeHasCollided = false
 	}
 
 	var gameInfo: GameInfo {
@@ -133,7 +158,8 @@ extension SnakeGame: Game {
 		let keyCommands: [InputCommands] = [("w", "up"),
 																				("a", "left"),
 																				("s", "down"),
-																				("d", "right")]
+																				("d", "right"),
+																				("q", "quit")]
 		return GameInfo(title: title, author: author, about: about, keyCommands: keyCommands)
 	}
 }
@@ -213,7 +239,12 @@ extension SnakeGame: TerminalDisplayable {
 		points.append(bottomBorderRow)
 		points.reverse()
 
-		let info = terminalDisplayablePoints(for: self.gameInfo.title + " | Score:" + String(self.score()))
+		var infoString = "Score: " + String(self.score())
+		if snakeHasCollided {
+			infoString += " | Play again? (y/n)"
+		}
+
+		let info = terminalDisplayablePoints(for: infoString)
 		points.append(info)
 		
 		return points
