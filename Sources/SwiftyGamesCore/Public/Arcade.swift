@@ -256,6 +256,15 @@ extension Arcade: TerminalDisplayable {
         points.append([verticalBorderPoint]
             + [TerminalDisplayablePoint](repeating: blankPoint, count: self.width)
             + [verticalBorderPoint])
+
+				// The commands
+				points.append(paddedRow(from: terminalDisplayablePoints(for: "Commands")))
+				points.append(paddedRow(from: terminalDisplayablePoints(for: "w - up")))
+				points.append(paddedRow(from: terminalDisplayablePoints(for: "s - down")))
+				points.append(paddedRow(from: terminalDisplayablePoints(for: "space - select")))
+				points.append(paddedRow(from: terminalDisplayablePoints(for: "q - quit")))
+				points.append(paddedRow(from: terminalDisplayablePoints(for: " ")))
+ 
         
         // The Games
         for game in self.games {
@@ -269,13 +278,15 @@ extension Arcade: TerminalDisplayable {
 						points.append(paddedRow(from: gameNameLine))
 						points.append(paddedRow(from: []))
         }
-        
+
+       
         let numBlankRows = height
             - titleLines.count
             - aboutLines.count
             - paddingBetweenTitleAndAbout
             - paddingBetweenAboutAndGames
             - games.count * 2
+						- 6
         
         for _ in 0..<numBlankRows {
             points.append([verticalBorderPoint] + [TerminalDisplayablePoint](repeating: blankPoint, count: self.width) + [verticalBorderPoint])
