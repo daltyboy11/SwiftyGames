@@ -25,14 +25,6 @@ final class MazeGame {
   private var position: Position = .zero
 	private var finishPosition: Position = Position(x: 40, y: 30)
 
-	private lazy var colorPairMapImpl: [ColorPair: Int32] = {
-		var map = [ColorPair: Int32]()
-		for (index, pair) in self.colorPairs().enumerated() {
-			map[pair] = Int32(index + 1)
-		}
-		return map
-	}()
-
 	init() {
 		maze = newMaze(width: self.width, height: self.height)
 	}
@@ -98,13 +90,7 @@ final class MazeGame {
 	private let floorPoint = TerminalDisplayablePoint(character: " ", foregroundColor: .white, backgroundColor: .black)
 	private let borderPoint = TerminalDisplayablePoint(character: " ", foregroundColor: .white, backgroundColor: .white)
 	private let playerPoint = TerminalDisplayablePoint(character: " ", foregroundColor: .yellow, backgroundColor: .yellow)
-    private let finishPoint = TerminalDisplayablePoint(character: " ", foregroundColor: .green, backgroundColor: .green)
-
-	private func colorPairs() -> [ColorPair] {
-		return [ColorPair(first: borderPoint.foregroundColor, second: borderPoint.backgroundColor),
-                ColorPair(first: playerPoint.foregroundColor, second: playerPoint.backgroundColor),
-                ColorPair(first: finishPoint.foregroundColor, second: finishPoint.foregroundColor)]
-	}
+  private let finishPoint = TerminalDisplayablePoint(character: " ", foregroundColor: .green, backgroundColor: .green)
 }
 
 extension MazeGame: Game {
@@ -175,8 +161,11 @@ extension MazeGame: Game {
 }
 
 extension MazeGame: TerminalDisplayable {
-	var colorPairMap: [ColorPair: Int32] {
-		return colorPairMapImpl
+
+	func colorPairs() -> [ColorPair] {
+		return [ColorPair(first: borderPoint.foregroundColor, second: borderPoint.backgroundColor),
+                ColorPair(first: playerPoint.foregroundColor, second: playerPoint.backgroundColor),
+                ColorPair(first: finishPoint.foregroundColor, second: finishPoint.foregroundColor)]
 	}
 
 	func points() -> [[TerminalDisplayablePoint]] {

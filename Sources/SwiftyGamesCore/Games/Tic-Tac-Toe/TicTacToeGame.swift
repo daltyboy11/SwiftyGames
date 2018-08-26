@@ -62,28 +62,11 @@ final class TicTacToeGame {
 	// position.x = row, position.y = column
 	private var position = Position(x: 0, y: 0)
 
-	// For the TerminalDisplayable conformance
-	private lazy var colorPairMapImpl: [ColorPair: Int32] = {
-		var map = [ColorPair: Int32]()
-		for (index, pair) in self.colorPairs().enumerated() {
-			map[pair] = Int32(index + 1)
-		}
-		return map
-	}()
-
-
 	private let borderPointHorizontal = TerminalDisplayablePoint(character: " ", foregroundColor: .red, backgroundColor: .red)
 	private let borderPointVertical = TerminalDisplayablePoint(character: " ", foregroundColor: .red, backgroundColor: .red)
 	private let blankPoint = TerminalDisplayablePoint(character: " ", foregroundColor: .white, backgroundColor: .black)
 	private let markPoint = TerminalDisplayablePoint(character: " ", foregroundColor: .black, backgroundColor: .white)
 	private let markPointHighlighted = TerminalDisplayablePoint(character: " ", foregroundColor: .black, backgroundColor: .green)
-
-	// Return the unique color pairs for the tpyes of points we'll be using
-	private func colorPairs() -> [ColorPair] {
-		return [ColorPair(first: borderPointHorizontal.foregroundColor, second: borderPointHorizontal.backgroundColor),
-						ColorPair(first: markPoint.foregroundColor, second: markPoint.backgroundColor),
-						ColorPair(first: markPointHighlighted.foregroundColor, second: markPointHighlighted.backgroundColor)]
-	}
 
 	// We go from left to right or from down to up
 	// This one is tedious :'(
@@ -223,8 +206,10 @@ extension TicTacToeGame: TerminalInputReceivable {
 
 extension TicTacToeGame: TerminalDisplayable {
 
-	var colorPairMap: [ColorPair: Int32] {
-		return self.colorPairMapImpl
+	func colorPairs() -> [ColorPair] {
+		return [ColorPair(first: borderPointHorizontal.foregroundColor, second: borderPointHorizontal.backgroundColor),
+						ColorPair(first: markPoint.foregroundColor, second: markPoint.backgroundColor),
+						ColorPair(first: markPointHighlighted.foregroundColor, second: markPointHighlighted.backgroundColor)]
 	}
 
 	func points() -> [[TerminalDisplayablePoint]] {

@@ -2,6 +2,9 @@ import Darwin.ncurses
 
 class TerminalDisplayer {
 
+	// Map between color pairs and COLOR_PAIR indices for the current displayable
+	private var colorPairMap: [ColorPair: Int32] = [:]
+
 	func setupTerminal() {
 		initscr()
 		start_color()
@@ -14,9 +17,13 @@ class TerminalDisplayer {
 	}
 
 	func refreshTerminal(for displayable: TerminalDisplayable) {	
+		// Invalidate the map for the next displayable
+		colorPairMap = [:]
+		// Switch back to the default input mode, in case one of the games was using halfdelay
 		cbreak()
-		for (pair, index) in displayable.colorPairMap {
-			init_pair(Int16(index), ncursesColor(from: pair.first), ncursesColor(from: pair.second))
+		for (index, pair) in displayable.colorPairs().enumerated() {
+			init_pair(Int16(index + 1), ncursesColor(from: pair.first), ncursesColor(from: pair.second))
+			colorPairMap[pair] = Int32(index + 1)
 		}
 	}
 
@@ -25,9 +32,9 @@ class TerminalDisplayer {
 		let points = shouldCenterInWindow ? windowCenteredPoints(from: displayable.points()) : displayable.points()
 		for (i, row) in points.enumerated() {
 			for (j, point) in row.enumerated() {
-				attron(COLOR_PAIR(displayable.colorPairMap[ColorPair(first: point.foregroundColor, second: point.backgroundColor)] ?? 0))
+				attron(COLOR_PAIR(colorPairMap[ColorPair(first: point.foregroundColor, second: point.backgroundColor)] ?? 0))
 				mvaddch(Int32(i), Int32(j), UInt32(point.character))
-				attroff(COLOR_PAIR(displayable.colorPairMap[ColorPair(first: point.foregroundColor, second: point.backgroundColor)] ?? 0))
+				attroff(COLOR_PAIR(colorPairMap[ColorPair(first: point.foregroundColor, second: point.backgroundColor)] ?? 0))
 			}
 		}
 	}

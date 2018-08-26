@@ -36,14 +36,6 @@ final class SnakeGame {
 		self.fruitPosition = Position(x: randX, y: randY)
 	}
 
-	private lazy var colorPairMapImpl: [ColorPair: Int32] = {
-		var map = [ColorPair: Int32]()
-		for (index, point) in self.pointTypes().enumerated() {
-			map[ColorPair(first: point.foregroundColor, second: point.backgroundColor)] = Int32(index + 1)
-		}
-		return map
-	}()
-
 	private func randomPositionNotInSnake() -> Position {
 		var randX = Int(arc4random_uniform(UInt32(self.width)))
 		var randY = Int(arc4random_uniform(UInt32(self.height)))
@@ -57,6 +49,12 @@ final class SnakeGame {
 	private func score() -> Int {
 		return self.snake.length
 	}
+
+	private let bodyPoint = TerminalDisplayablePoint(character: "o", foregroundColor: .green, backgroundColor: .black)
+	private let headPoint = TerminalDisplayablePoint(character: "o", foregroundColor: .yellow, backgroundColor: .black)
+	private let fruitPoint =  TerminalDisplayablePoint(character: "o", foregroundColor: .red, backgroundColor: .black) 
+	private let backgroundPoint = TerminalDisplayablePoint(character: " ", foregroundColor: .black, backgroundColor: .black)
+	private let borderPoint = TerminalDisplayablePoint(character: " ", foregroundColor: .white, backgroundColor: .white)
 
 }
 
@@ -167,41 +165,12 @@ extension SnakeGame: Game {
 
 extension SnakeGame: TerminalDisplayable {
 
-	private var bodyPoint: TerminalDisplayablePoint {
-		return TerminalDisplayablePoint(character: "o", foregroundColor: .green, backgroundColor: .black)
-	}
-
-	private var headPoint: TerminalDisplayablePoint {
-		return	TerminalDisplayablePoint(character: "o", foregroundColor: .yellow, backgroundColor: .black)
-	}
-
-	private var fruitPoint: TerminalDisplayablePoint {
-		return TerminalDisplayablePoint(character: "o", foregroundColor: .red, backgroundColor: .black)
-	}
-
-	private var backgroundPoint: TerminalDisplayablePoint {
-		return TerminalDisplayablePoint(character: " ", foregroundColor: .black, backgroundColor: .black)
-	}
-
-	private var verticalBorderPoint: TerminalDisplayablePoint {
-		return TerminalDisplayablePoint(character: "|", foregroundColor: .white, backgroundColor: .white)
-	}
-	
-	private var horizontalBorderPoint: TerminalDisplayablePoint {
-		return TerminalDisplayablePoint(character: "-", foregroundColor: .white, backgroundColor: .white)
-	}
-
-	var colorPairMap: [ColorPair: Int32] {
-		return self.colorPairMapImpl
-	}
-
-	private func pointTypes() -> [TerminalDisplayablePoint] {
-		return [bodyPoint,
-						headPoint,
-						fruitPoint,
-						backgroundPoint,
-						verticalBorderPoint,
-						horizontalBorderPoint]
+	func colorPairs() -> [ColorPair] {
+		return [ColorPair(first: .green, second: .black),
+						ColorPair(first: .yellow, second: .black),
+						ColorPair(first: .red, second: .black),
+						ColorPair(first: .black, second: .black),
+						ColorPair(first: .white, second: .white)]
 	}
 						
 
@@ -212,7 +181,7 @@ extension SnakeGame: TerminalDisplayable {
 
 		for r in 0..<self.height {
 			var row = [TerminalDisplayablePoint]()
-			row.append(verticalBorderPoint)
+			row.append(borderPoint)
 			for c in 0..<self.width {
 				let pos = Position(x: c, y: r)
 				if snake.bodyIntersects(pos) && pos != fruitPosition && pos != snake.position {
@@ -226,14 +195,14 @@ extension SnakeGame: TerminalDisplayable {
 				}
 			}
 			
-			row.append(verticalBorderPoint)
+			row.append(borderPoint)
 			points.append(row)
 
 		}
 		
 		// An additional two characters in the top and bottom rows looks nicer
-		let topBorderRow = [TerminalDisplayablePoint](repeating: horizontalBorderPoint, count: self.width + 2)
-		let bottomBorderRow = [TerminalDisplayablePoint](repeating: horizontalBorderPoint, count: self.width + 2)
+		let topBorderRow = [TerminalDisplayablePoint](repeating: borderPoint, count: self.width + 2)
+		let bottomBorderRow = [TerminalDisplayablePoint](repeating: borderPoint, count: self.width + 2)
 
 		points.insert(topBorderRow, at: 0)
 		points.append(bottomBorderRow)

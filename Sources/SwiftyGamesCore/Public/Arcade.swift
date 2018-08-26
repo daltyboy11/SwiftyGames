@@ -100,22 +100,6 @@ public class Arcade {
 		return titleLines.count
 	}
 
-	private var colorPairs: [ColorPair] {
-		var pairs = [ColorPair]()
-		pairs.reserveCapacity(2)
-		pairs.append(ColorPair(first: .white, second: .black)) // white on black
-		pairs.append(ColorPair(first: .black, second: .white)) // black on white
-		return pairs
-	}
-
-	private lazy var colorPairMapImpl: [ColorPair: Int32] = {
-		var map = [ColorPair: Int32]()
-		for (index, pair) in self.colorPairs.enumerated() {
-			map[pair] = Int32(index + 1)
-		}
-		return map
-	}()
-
 	private let paddingBetweenTitleAndAbout = 1
 	private let paddingBetweenAboutAndGames = 1
 
@@ -174,9 +158,10 @@ extension Arcade: TerminalDisplayable {
 		return 45
 	}
 
-	var colorPairMap: [ColorPair: Int32] { 
-		return self.colorPairMapImpl
-	} 
+	func colorPairs() -> [ColorPair] {
+		return [ColorPair(first: .white, second: .black),
+						ColorPair(first: .black, second: .white)]
+	}
 
 
 	// The display for a game menu
