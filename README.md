@@ -1,12 +1,10 @@
 # SwiftyGames
 
-<p float="left">
-  <img src="https://github.com/daltyboy11/SwiftyGames/blob/master/Screenshots/snake-crop.gif" width="300" />
-  <img src="https://github.com/daltyboy11/SwiftyGames/blob/master/Screenshots/TicTacToe-crop.gif" width="300" /> 
-  <img src="https://github.com/daltyboy11/SwiftyGames/blob/master/Screenshots/maze-crop.gif" width="300" />
-</p>
-
 **Swifty Games** is a collection of 2D arcade games on the terminal, written in Swift. It uses [ncurses](https://en.wikipedia.org/wiki/Ncurses) for drawing.
+
+![snake](https://github.com/daltyboy11/SwiftyGames/blob/master/Screenshots/snake-crop.gif)
+![tic-tac-toe](https://github.com/daltyboy11/SwiftyGames/blob/master/Screenshots/TicTacToe-crop.gif)
+![maze](https://github.com/daltyboy11/SwiftyGames/blob/master/Screenshots/maze-crop.gif)
 
 The current repository includes
 
