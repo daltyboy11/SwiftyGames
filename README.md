@@ -6,11 +6,11 @@ Swifty Games is a collection of 2D arcade games on the terminal, written in Swif
 
 The current repository includes
 
-* [Maze](https://github.com/daltyboy11/SwiftyGames/blob/master/Sources/SwiftyGamesCore/Games/Maze/MazeGame.swift)
+* [Maze](https://github.com/daltyboy11/SwiftyGames/blob/master/Screenshots/Maze.png)
 
-* [Snake](https://github.com/daltyboy11/SwiftyGames/blob/master/Sources/SwiftyGamesCore/Games/Snake/SnakeGame.swift)
+* [Snake](https://github.com/daltyboy11/SwiftyGames/blob/master/Screenshots/Snake.png)
 
-* [Tic-Tac-Toe](https://github.com/daltyboy11/SwiftyGames/blob/master/Sources/SwiftyGamesCore/Games/Tic-Tac-Toe/TicTacToeGame.swift)
+* [Tic-Tac-Toe](https://github.com/daltyboy11/SwiftyGames/blob/master/Screenshots/TicTacToe.png)
 
 ## Installation
 
