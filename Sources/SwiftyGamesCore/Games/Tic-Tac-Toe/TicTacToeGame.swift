@@ -99,6 +99,23 @@ final class TicTacToeGame {
 
 		return (false, Position(), Position(), Position())
 	}
+	
+
+	private func boardIsFull() -> Bool {
+		for row in board {
+			for mark in row {
+				if mark == .markBlank {
+					return false
+				}
+			}
+		}
+
+		return true
+	}
+
+	private func isDraw() -> Bool {
+		return !threeInARow(.markX).0 && !threeInARow(.markO).0 && boardIsFull()
+	}
 }
 
 fileprivate extension Position {
@@ -120,6 +137,10 @@ extension TicTacToeGame: Game {
 			return
 		}
 
+		guard !threeInARow(.markX).0 && !threeInARow(.markO).0 else {
+			return
+		}
+
 		// The player should not be able to mark a spot that has alread been marked
 		guard board[position.x][position.y] != .markX else {
 			return
@@ -131,10 +152,6 @@ extension TicTacToeGame: Game {
 
 		board[position.x][position.y] = turn.mark()
 		
-		if threeInARow(.markX).0 || threeInARow(.markO).0 {
-			return
-		}
-
 		turn = turn.toggle()
 	}
 
@@ -189,12 +206,12 @@ extension TicTacToeGame: TerminalInputReceivable {
 		case 99: // c
 			position = Position(x: 2, y: 2)
 		case 121: // y, restart game
-			if threeInARow(.markX).0 || threeInARow(.markO).0 {
+			if threeInARow(.markX).0 || threeInARow(.markO).0 || isDraw() {
 				self.reset()
 				playerJustReset = true
 			}
 		case 110: // n, quit game
-			if threeInARow(.markX).0 || threeInARow(.markO).0 {
+			if threeInARow(.markX).0 || threeInARow(.markO).0 || isDraw() {
 				quit = true
 			}
 		default:
@@ -259,6 +276,8 @@ extension TicTacToeGame: TerminalDisplayable {
 		// Info
 		if threeInARow(.markX).0 || threeInARow(.markO).0 {
 			points.append(terminalDisplayablePoints(for: String(describing: turn) + " wins! Play again? (y/n)"))
+		} else if isDraw() {
+			points.append(terminalDisplayablePoints(for: "Draw! Play again? (y/n)"))
 		} else {
 			points.append(terminalDisplayablePoints(for: "To move: " + String(describing: turn)))
 		}
