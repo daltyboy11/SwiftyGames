@@ -4,7 +4,7 @@ protocol InputReceivable {
 
 extension InputReceivable {
 	func input() {
-		fatalError("Implement me in a subclass.")
+		fatalError("Implement me.")
 	}
 }
 
