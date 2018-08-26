@@ -24,5 +24,8 @@ After the proper installation you can launch the Swifty Games Arcade by typing `
 
 ## Contributing
 
-Improving upon an existing game, adding a new game to the arcade, or any general improvements are welcome. Please read the [contribution guide]() to get a better understanding of the internals of Swifty Games and how to best go about adding a new game.
+Please read the [contribution guide](https://github.com/daltyboy11/SwiftyGames/blob/master/CONTRIBUTING.md) to learn about how to add a new game to the arcade. Adding a new game, improving an existing one, or any other general improvements are welcome!
 
+## License
+
+See [LICENSE.md](https://github.com/daltyboy11/SwiftyGames/blob/master/LICENSE.md)
