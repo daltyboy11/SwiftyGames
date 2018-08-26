@@ -2,7 +2,7 @@
 
 ![SwiftyGames](https://github.com/daltyboy11/SwiftyGames/blob/master/Screenshots/Menu.png)
 
-Swifty Games is a collection of 2D arcade games on the terminal, written in Swift. It uses [ncurses](https://en.wikipedia.org/wiki/Ncurses) for drawing.
+**Swifty Games** is a collection of 2D arcade games on the terminal, written in Swift. It uses [ncurses](https://en.wikipedia.org/wiki/Ncurses) for drawing.
 
 The current repository includes
 
