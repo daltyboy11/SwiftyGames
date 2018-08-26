@@ -1,9 +1,9 @@
 # SwiftyGames
 
 <p float="left">
-  <img src="https://github.com/daltyboy11/SwiftyGames/blob/master/Screenshots/snake-crop.gif" width="100" />
-  <img src="https://github.com/daltyboy11/SwiftyGames/blob/master/Screenshots/TicTacToe-crop.gif" width="100" /> 
-  <img src="https://github.com/daltyboy11/SwiftyGames/blob/master/Screenshots/maze-crop.gif" width="100" />
+  <img src="https://github.com/daltyboy11/SwiftyGames/blob/master/Screenshots/snake-crop.gif" width="250" />
+  <img src="https://github.com/daltyboy11/SwiftyGames/blob/master/Screenshots/TicTacToe-crop.gif" width="250" /> 
+  <img src="https://github.com/daltyboy11/SwiftyGames/blob/master/Screenshots/maze-crop.gif" width="250" />
 </p>
 
 **Swifty Games** is a collection of 2D arcade games on the terminal, written in Swift. It uses [ncurses](https://en.wikipedia.org/wiki/Ncurses) for drawing.
